@@ -30,6 +30,9 @@ public class UserEntity {
     private String password;
 
     private String phone;
+    @Lob
+    @Column(name = "imagedata")
+    private byte[] imageData;
 
     @Email
     private String email;

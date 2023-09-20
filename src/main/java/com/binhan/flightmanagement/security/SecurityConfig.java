@@ -24,7 +24,7 @@ public class SecurityConfig {
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
-    private SecurityConfig(CustomUserDetailsService userDetailsService,JwtAuthEntryPoint authEntryPoint){
+    public SecurityConfig(CustomUserDetailsService userDetailsService,JwtAuthEntryPoint authEntryPoint){
         this.authEntryPoint = authEntryPoint;
         this.userDetailsService = userDetailsService;
     }
@@ -56,7 +56,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/building").hasAnyRole("ADMIN")
+                .antMatchers("/api/role").hasAnyRole("ADMIN")
+                .antMatchers("/api/user").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();

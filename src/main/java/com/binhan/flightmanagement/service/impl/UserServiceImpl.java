@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.service.impl;
 
+import com.binhan.flightmanagement.converter.UserConverter;
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.models.RoleEntity;
@@ -21,11 +22,14 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private RoleRepository roleRepository;
+    private UserConverter userConverter;
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder,RoleRepository roleRepository){
+    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder,
+                           RoleRepository roleRepository,UserConverter userConverter){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.userConverter = userConverter;
     }
 
     @Override
@@ -40,9 +44,13 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userRequest.getEmail());
         user.setFullName(userRequest.getFullName());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        //add role
         RoleEntity roles = roleRepository.findByCode("CUSTOMER").get();
-        user.setRoles((Set<RoleEntity>) roles);
-        userRepository.save(user);
-        return null;
+        Set<RoleEntity> roleEntities = user.getRoles();
+        roleEntities.add(roles);
+        user.setRoles(roleEntities);
+        UserEntity userEntity = userRepository.save(user);
+        UserDto userDto = userConverter.convertToDto(userEntity);
+        return userDto;
     }
 }
