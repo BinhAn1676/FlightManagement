@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.validation.constraints.Email;
 
 @Getter
@@ -19,5 +20,7 @@ public class UserDto {
     private String userName;
     private String password;
     private String phone;
+    @Lob
+    private byte[] imageData;
     private String email;
 }

@@ -55,9 +55,9 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/role").hasAnyRole("ADMIN")
-                .antMatchers("/api/user").authenticated()
+                .antMatchers("/auth/**").permitAll()
+                .antMatchers("/roles").hasAnyRole("ADMIN")
+                .antMatchers("/users").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();

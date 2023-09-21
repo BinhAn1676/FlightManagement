@@ -1,6 +1,8 @@
 package com.binhan.flightmanagement.advice;
 
+import com.binhan.flightmanagement.exception.WrongRepeatPasswordException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -19,6 +21,11 @@ public class ApplicationExceptionHandler {
             errorMap.put(error.getField(), error.getDefaultMessage());
         });
         return errorMap;
+    }
+
+    @ExceptionHandler(WrongRepeatPasswordException.class)
+    public ResponseEntity<String> handleBuildingNotFoundException(WrongRepeatPasswordException ex){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     /*@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

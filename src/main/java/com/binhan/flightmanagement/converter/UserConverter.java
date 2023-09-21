@@ -14,6 +14,10 @@ public class UserConverter {
         userDto.setEmail(user.getEmail());
         userDto.setFullName(user.getFullName());
         userDto.setPassword(user.getPassword());
+        if(user.getImageData()!=null){
+            userDto.setImageData(user.getImageData());
+        }
         return userDto;
     }
+
 }
