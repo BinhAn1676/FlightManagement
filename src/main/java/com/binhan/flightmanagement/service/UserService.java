@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.service;
 
+import com.binhan.flightmanagement.dto.RoleDto;
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
@@ -22,4 +23,8 @@ public interface UserService {
     byte[] findImageById(Long id);
 
     String changePassword(ChangePasswordDto changePasswordDto);
+
+    String saveNewUser(RegisterDto newUser);
+
+    String addRoletoUser(Long userId, RoleDto roleDto);
 }

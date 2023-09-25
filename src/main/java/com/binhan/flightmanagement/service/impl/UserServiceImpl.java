@@ -1,9 +1,14 @@
 package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.UserConverter;
+import com.binhan.flightmanagement.dto.RoleDto;
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
+import com.binhan.flightmanagement.exception.RoleNotFoundException;
+import com.binhan.flightmanagement.exception.UserNotFoundException;
+import com.binhan.flightmanagement.exception.WrongOldPasswordException;
+import com.binhan.flightmanagement.exception.WrongRepeatPasswordException;
 import com.binhan.flightmanagement.models.RoleEntity;
 import com.binhan.flightmanagement.models.UserEntity;
 import com.binhan.flightmanagement.repository.RoleRepository;
@@ -16,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.management.relation.Role;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,8 +47,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto saveUser(RegisterDto userRequest) {
-        if (userRepository.existsByUserName(userRequest.getUsername())) {
+        if (userRepository.existsByUserName(userRequest.getUsername())) {//check user is already existed
             return null;
+        }
+        if(!userRequest.getPassword().equals(userRequest.getRepeatPassword())){//wrong repeat password
+            throw new WrongRepeatPasswordException("wrong repeat password");
         }
         UserEntity user = new UserEntity();
         user.setUserName(userRequest.getUsername());
@@ -115,7 +124,65 @@ public class UserServiceImpl implements UserService {
     @Override
     public String changePassword(ChangePasswordDto changePasswordDto) {
         UserEntity user = userRepository.findById(changePasswordDto.getId()).get();
+        if (user == null) {
+            // Handle the case where the user is not found
+            throw new UserNotFoundException("User not found");
+        }
+        String storedPassword = user.getPassword();
+        String enteredOldPassword = changePasswordDto.getOldPassword();
 
-        return null;
+        if (passwordEncoder.matches(enteredOldPassword, storedPassword)) {
+            if(!changePasswordDto.getNewPassword().equals(changePasswordDto.getRepeatNewPassword())){
+                throw new WrongRepeatPasswordException("wrong repeat password");
+            }else{
+                user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+                userRepository.save(user);
+                return "Change password successfully";
+            }
+        } else {
+            throw new WrongOldPasswordException("Wrong old password");
+        }
+    }
+
+    @Override
+    public String saveNewUser(RegisterDto newUser) {
+        if (userRepository.existsByUserName(newUser.getUsername())) {//check user is already existed
+            return null;
+        }
+        if(!newUser.getPassword().equals(newUser.getRepeatPassword())){//wrong repeat password
+            throw new WrongRepeatPasswordException("wrong repeat password");
+        }
+        UserEntity user = new UserEntity();
+        user.setUserName(newUser.getUsername());
+        user.setPhone(newUser.getPhone());
+        user.setEmail(newUser.getEmail());
+        user.setFullName(newUser.getFullName());
+        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        UserEntity userEntity = userRepository.save(user);
+        if(userEntity!=null){
+            return "Add user Successfully";
+        }
+        return "add failed";
+
+    }
+
+    @Override
+    public String addRoletoUser(Long userId, RoleDto roleDto) {
+        UserEntity user = userRepository.findById(userId).get();
+        if(user == null){
+            throw new UserNotFoundException("Cant find this user id");
+        }
+        RoleEntity roleEntity = roleRepository.findByCode(roleDto.getCode()).get();
+        if(roleEntity == null){
+            throw new RoleNotFoundException("Cant find this role");
+        }
+        Set<RoleEntity> roles = user.getRoles();
+        roles.add(roleEntity);
+        user.setRoles(roles);
+        UserEntity userSave = userRepository.save(user);
+        if(userSave != null){
+            return "add role successfully to user";
+        }
+        return "add failed";
     }
 }

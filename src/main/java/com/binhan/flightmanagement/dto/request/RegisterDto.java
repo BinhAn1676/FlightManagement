@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -26,6 +27,10 @@ public class RegisterDto {
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d).*$", message = "Password must contain at least one uppercase letter and one digit")
     private String password;
 
+    @NotNull(message = "cant be empty")
+    private String repeatPassword;
+
     @Pattern(regexp = "^\\d{10}$",message = "invalid mobile number entered ")
+    @Nullable
     private String phone;
 }

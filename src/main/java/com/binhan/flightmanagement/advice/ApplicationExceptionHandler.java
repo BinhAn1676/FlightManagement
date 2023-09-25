@@ -1,5 +1,7 @@
 package com.binhan.flightmanagement.advice;
 
+import com.binhan.flightmanagement.exception.UserNotFoundException;
+import com.binhan.flightmanagement.exception.WrongOldPasswordException;
 import com.binhan.flightmanagement.exception.WrongRepeatPasswordException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +26,18 @@ public class ApplicationExceptionHandler {
     }
 
     @ExceptionHandler(WrongRepeatPasswordException.class)
-    public ResponseEntity<String> handleBuildingNotFoundException(WrongRepeatPasswordException ex){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    public ResponseEntity<String> handleWrongRepeatPasswordException(WrongRepeatPasswordException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(WrongOldPasswordException.class)
+    public ResponseEntity<String> handleWrongOldPasswordException(WrongOldPasswordException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     /*@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

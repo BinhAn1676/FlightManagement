@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.controllers;
 
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
+import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +21,22 @@ public class UserController {
     public UserController(UserService userService){
         this.userService = userService;
     }
+
+    /**
+     * admin can add more user which can be employee
+     * @param newUser
+     * @return
+     */
+    @PostMapping()
+    public ResponseEntity<?> addNewUser(@RequestBody RegisterDto newUser){
+        String msg = userService.saveNewUser(newUser);
+        if (msg == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tài khoản đã tồn tại");
+        } else {
+            return ResponseEntity.status(HttpStatus.CREATED).body(msg);
+        }
+    }
+
 
     /**
      * upload avatar image
@@ -41,7 +58,7 @@ public class UserController {
      * @param userDto
      * @return
      */
-    @PutMapping()
+    @PutMapping("/info")
     public ResponseEntity<?> updateUser(@RequestBody UserDto userDto){
         String userSave = userService.update(userDto);
         return ResponseEntity.status(HttpStatus.OK)
@@ -69,11 +86,11 @@ public class UserController {
      * @param
      * @return
      */
-    /*@PutMapping()
+    @PutMapping("/password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
         String message = userService.changePassword(changePasswordDto);
         return ResponseEntity.ok(message);
-    }*/
+    }
 
     private MediaType getMediaTypeForImageData(byte[] imageData) {
         // Detect the image format based on the image's magic bytes or other characteristics
