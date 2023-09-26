@@ -4,6 +4,7 @@ import com.binhan.flightmanagement.converter.UserConverter;
 import com.binhan.flightmanagement.dto.RoleDto;
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
+import com.binhan.flightmanagement.dto.request.NewPassword;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.exception.RoleNotFoundException;
 import com.binhan.flightmanagement.exception.UserNotFoundException;
@@ -184,5 +185,17 @@ public class UserServiceImpl implements UserService {
             return "add role successfully to user";
         }
         return "add failed";
+    }
+
+    @Override
+    public void forgetPassword(NewPassword newPassword) {
+        UserEntity user = userRepository.findByEmail(newPassword.getGmail())
+                .orElseThrow(() -> new UserNotFoundException("Cant find this account"));
+        if(!newPassword.getNewPassword().equals(newPassword.getRepeatNewPassword())){
+            throw new WrongRepeatPasswordException("wrong repeat password");
+        }else{
+            user.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
+            userRepository.save(user);
+        }
     }
 }

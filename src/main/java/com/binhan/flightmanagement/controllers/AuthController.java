@@ -1,11 +1,14 @@
 package com.binhan.flightmanagement.controllers;
 
 import com.binhan.flightmanagement.dto.AuthResponseDto;
+import com.binhan.flightmanagement.dto.EmailMessage;
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.LoginDto;
+import com.binhan.flightmanagement.dto.request.NewPassword;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.dto.response.ResponseDto;
 import com.binhan.flightmanagement.security.JWTGenerator;
+import com.binhan.flightmanagement.service.EmailSenderService;
 import com.binhan.flightmanagement.service.UserService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +30,14 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     private UserService userService;
     private JWTGenerator jwtGenerator;
+    private EmailSenderService emailSenderService;
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager,UserService userService,JWTGenerator jwtGenerator){
+    public AuthController(AuthenticationManager authenticationManager,UserService userService,
+                          JWTGenerator jwtGenerator,EmailSenderService emailSenderService){
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtGenerator = jwtGenerator;
+        this.emailSenderService = emailSenderService;
     }
 
     @PostMapping("/signup")
@@ -54,4 +60,31 @@ public class AuthController {
         String token = jwtGenerator.generateToken(authentication);
         return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
     }
+
+    @GetMapping()
+    public ResponseEntity<?> sendMailForgetPassword(@RequestBody EmailMessage emailMessage){
+        this.emailSenderService.sendEmail(emailMessage.getTo(), emailMessage.getSubject(), emailMessage.getMessage());
+        return ResponseEntity.ok("Success");
+    }
+
+    @PostMapping("/checkNumber")
+    public ResponseEntity<String> checkNumber(@RequestBody Integer numberToCheck) {
+        boolean isMatch = emailSenderService.checkNumber(numberToCheck);
+
+        if (isMatch) {
+            // Return a URL to a different page
+            String url = "http://localhost:8080/auth/newPassword";
+            return ResponseEntity.status(HttpStatus.OK).body(url);
+        } else {
+            // Handle the case where the number doesn't match
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Number not found");
+        }
+    }
+
+    @PutMapping("/newPassword")
+    public ResponseEntity<String> changePassword(@RequestBody NewPassword newPassword){
+        userService.forgetPassword(newPassword);
+        return ResponseEntity.status(HttpStatus.OK).body("Changed password successfuly");
+    }
+
 }

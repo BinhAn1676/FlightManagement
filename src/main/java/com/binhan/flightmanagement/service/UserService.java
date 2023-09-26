@@ -3,6 +3,7 @@ package com.binhan.flightmanagement.service;
 import com.binhan.flightmanagement.dto.RoleDto;
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
+import com.binhan.flightmanagement.dto.request.NewPassword;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,4 +28,6 @@ public interface UserService {
     String saveNewUser(RegisterDto newUser);
 
     String addRoletoUser(Long userId, RoleDto roleDto);
+
+    void forgetPassword(NewPassword newPassword);
 }
