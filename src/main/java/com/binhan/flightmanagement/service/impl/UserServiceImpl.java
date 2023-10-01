@@ -70,18 +70,6 @@ public class UserServiceImpl implements UserService {
         return userDto;
     }
 
-    @Override
-    public List<UserDto> findAll() {
-        List<UserEntity> userEntities = userRepository.findAll();
-        List<UserDto> userDtos = new ArrayList<>();
-        for(var item : userEntities){
-            UserDto userDto = userConverter.convertToDto(item);
-            byte[] images=ImageUtils.decompressImage(item.getImageData());
-            userDto.setImageData(images);
-            userDtos.add(userDto);
-        }
-        return userDtos;
-    }
 
     @Override
     public String update(UserDto userDto) {

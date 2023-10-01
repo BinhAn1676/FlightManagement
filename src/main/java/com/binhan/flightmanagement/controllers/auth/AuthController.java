@@ -1,4 +1,4 @@
-package com.binhan.flightmanagement.controllers;
+package com.binhan.flightmanagement.controllers.auth;
 
 import com.binhan.flightmanagement.dto.AuthResponseDto;
 import com.binhan.flightmanagement.dto.EmailMessage;

@@ -13,8 +13,6 @@ import java.util.List;
 public interface UserService {
     UserDto saveUser(RegisterDto userRequest);
 
-    List<UserDto> findAll();
-
     String update(UserDto userDto) ;
 
     UserDto findById(Long id);

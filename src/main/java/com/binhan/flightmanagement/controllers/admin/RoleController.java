@@ -1,4 +1,4 @@
-package com.binhan.flightmanagement.controllers;
+package com.binhan.flightmanagement.controllers.admin;
 
 import com.binhan.flightmanagement.dto.RoleDto;
 import com.binhan.flightmanagement.dto.UserDto;

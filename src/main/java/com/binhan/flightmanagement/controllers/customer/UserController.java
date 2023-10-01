@@ -1,9 +1,11 @@
-package com.binhan.flightmanagement.controllers;
+package com.binhan.flightmanagement.controllers.customer;
 
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
+import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,30 +13,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private UserService userService;
-
+    @Autowired
     public UserController(UserService userService){
         this.userService = userService;
-    }
-
-    /**
-     * admin can add more user which can be employee
-     * @param newUser
-     * @return
-     */
-    @PostMapping()
-    public ResponseEntity<?> addNewUser(@RequestBody RegisterDto newUser){
-        String msg = userService.saveNewUser(newUser);
-        if (msg == null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tài khoản đã tồn tại");
-        } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body(msg);
-        }
     }
 
 
@@ -91,6 +79,7 @@ public class UserController {
         String message = userService.changePassword(changePasswordDto);
         return ResponseEntity.ok(message);
     }
+
 
     private MediaType getMediaTypeForImageData(byte[] imageData) {
         // Detect the image format based on the image's magic bytes or other characteristics
