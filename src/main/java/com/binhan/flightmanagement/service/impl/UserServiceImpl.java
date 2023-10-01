@@ -86,6 +86,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public String update(UserDto userDto) {
         UserEntity user = userRepository.findById(userDto.getId()).get();
+        if (user == null) {
+            // Handle the case where the user is not found
+            throw new UserNotFoundException("User not found");
+        }
         user.setPhone(userDto.getPhone());
         user.setEmail(userDto.getEmail());
         user.setFullName(userDto.getFullName());
@@ -99,6 +103,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findById(Long id) {
         UserEntity user = userRepository.findById(id).get();
+        if (user == null) {
+            // Handle the case where the user is not found
+            throw new UserNotFoundException("User not found");
+        }
         UserDto userDto = userConverter.convertToDto(user);
         userDto.setImageData(null);
         return userDto;
@@ -107,6 +115,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public String uploadImage(MultipartFile file,Long id) throws IOException {
         UserEntity userEntity = userRepository.findById(id).get();
+        if (userEntity == null) {
+            // Handle the case where the user is not found
+            throw new UserNotFoundException("User not found");
+        }
         userEntity.setImageData(ImageUtils.compressImage(file.getBytes()));
         userEntity = userRepository.save(userEntity);
         if (userEntity != null) {
