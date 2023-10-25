@@ -6,23 +6,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "airports")
-public class AirportEntity {
+@Table(name = "countries")
+public class CountryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String airportName;
-    private String location;
+    private String countryName;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private CountryEntity country;
-
+    @OneToMany(mappedBy = "country",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<AirportEntity> airports = new ArrayList<>();
 }
