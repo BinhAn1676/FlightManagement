@@ -1,15 +1,18 @@
 package com.binhan.flightmanagement.advice;
 
+import com.binhan.flightmanagement.exception.CountryNotFoundException;
 import com.binhan.flightmanagement.exception.UserNotFoundException;
 import com.binhan.flightmanagement.exception.WrongOldPasswordException;
 import com.binhan.flightmanagement.exception.WrongRepeatPasswordException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +40,15 @@ public class ApplicationExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<String> AuthenticationCredentialsNotFoundException(Exception ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+    @ExceptionHandler(CountryNotFoundException.class)
+    public ResponseEntity<String> CountryNotFoundException(Exception ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 

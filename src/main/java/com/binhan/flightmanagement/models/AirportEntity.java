@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class AirportEntity {
 
     @ManyToOne
     @JoinColumn(name = "country_id")
+    @JsonIgnoreProperties("airports")
     private CountryEntity country;
 
 }

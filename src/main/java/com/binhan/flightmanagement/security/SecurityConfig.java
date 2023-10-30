@@ -58,8 +58,14 @@ public class SecurityConfig {
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/roles").hasAnyRole("ADMIN")
                 .antMatchers("/admin/**").hasAnyRole("ADMIN")
-                .antMatchers("/users").authenticated()
-                .anyRequest().authenticated()
+                .antMatchers(HttpMethod.POST,"/flight/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/flight/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/country/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/country/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/airport/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/airport/**").hasAnyRole("ADMIN")
+                .antMatchers("/users/**").authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .httpBasic();
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

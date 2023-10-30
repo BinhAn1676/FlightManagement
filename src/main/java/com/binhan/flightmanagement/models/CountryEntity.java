@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,6 @@ public class CountryEntity {
     private String countryName;
 
     @OneToMany(mappedBy = "country",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnoreProperties("country")
     private List<AirportEntity> airports = new ArrayList<>();
 }

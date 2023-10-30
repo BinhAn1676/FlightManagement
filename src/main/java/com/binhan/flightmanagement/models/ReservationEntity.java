@@ -33,4 +33,7 @@ public class ReservationEntity {
 
     @Column(name = "seat_number")
     private Integer seatNumber;
+
+    @Column(name = "booking_status")
+    private String bookingStatus;
 }
