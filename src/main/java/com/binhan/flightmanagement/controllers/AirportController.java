@@ -21,7 +21,7 @@ public class AirportController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AirportEntity>> getAllAirport(){
+    public ResponseEntity<List<AirportEntity>> getAllAirports(){
         return ResponseEntity.status(HttpStatus.OK).body(airportService.findAll());
     }
 

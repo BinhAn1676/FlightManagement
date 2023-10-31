@@ -38,4 +38,8 @@ public class FlightEntity {
     @JoinColumn(name = "arrival_airport_id")
     private AirportEntity arrivalAirport;
 
+    @ManyToOne
+    @JoinColumn(name = "aircraft_id")
+    private AircraftEntity aircraft;
+
 }

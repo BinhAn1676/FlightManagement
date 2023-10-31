@@ -64,6 +64,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.PUT,"/country/**").hasAnyRole("ADMIN")
                 .antMatchers(HttpMethod.POST,"/airport/**").hasAnyRole("ADMIN")
                 .antMatchers(HttpMethod.PUT,"/airport/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/aircraft/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/aircraft/**").hasAnyRole("ADMIN")
                 .antMatchers("/users/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
