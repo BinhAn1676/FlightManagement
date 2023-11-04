@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FlightDto {
+    private Long id;
     private String departureTime;
     private String arrivalTime;
 
@@ -18,7 +19,9 @@ public class FlightDto {
 
     private Double ticketPrice;
 
-    private Integer departureAirportId;
+    private Long departureAirportId;
 
-    private Integer arrivalAirportId;
+    private Long arrivalAirportId;
+
+    private Long aircraftId;
 }

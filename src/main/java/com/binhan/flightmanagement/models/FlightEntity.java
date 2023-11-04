@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +22,12 @@ public class FlightEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "departure_time")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private Date departureTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "arrival_time")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private Date arrivalTime;
 
     private String status;

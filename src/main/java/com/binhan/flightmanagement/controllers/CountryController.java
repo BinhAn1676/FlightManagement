@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/country")
@@ -43,6 +45,18 @@ public class CountryController {
         }else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
         }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCountry(@PathVariable("id") Long id){
+        countryService.delete(id);
+        return ResponseEntity.ok("Deleted successfully");
+    }
+
+    @PostMapping("/upload-country-data")
+    public ResponseEntity<?> uploadCountriesData(@RequestParam("file")MultipartFile file){
+        countryService.saveCountriesByExcel(file);
+        return ResponseEntity.ok(Map.of("Message","Countries data uploaded successfully"));
     }
 
 }

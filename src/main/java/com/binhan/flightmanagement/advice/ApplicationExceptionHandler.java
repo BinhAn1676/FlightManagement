@@ -1,9 +1,6 @@
 package com.binhan.flightmanagement.advice;
 
-import com.binhan.flightmanagement.exception.CountryNotFoundException;
-import com.binhan.flightmanagement.exception.UserNotFoundException;
-import com.binhan.flightmanagement.exception.WrongOldPasswordException;
-import com.binhan.flightmanagement.exception.WrongRepeatPasswordException;
+import com.binhan.flightmanagement.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -51,6 +48,16 @@ public class ApplicationExceptionHandler {
     public ResponseEntity<String> CountryNotFoundException(Exception ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
+
+    @ExceptionHandler(FlightNotFoundException.class)
+    public ResponseEntity<String> FlightNotFoundException(Exception ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+    @ExceptionHandler(WrongDateFormatException.class)
+    public ResponseEntity<String> WrongDateFormatException(Exception ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> Exception(Exception ex){

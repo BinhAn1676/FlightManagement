@@ -15,20 +15,26 @@ import java.util.List;
 public class FlightController {
 
     private FlightService flightService;
-    
+
     @Autowired
-    public FlightController(FlightService flightService){
-        this.flightService= flightService;
+    public FlightController(FlightService flightService) {
+        this.flightService = flightService;
     }
 
     @GetMapping
-    public ResponseEntity<List<FlightEntity>> getAllFlights(){
+    public ResponseEntity<List<FlightEntity>> getAllFlights() {
         return ResponseEntity.status(HttpStatus.OK).body(flightService.findAll());
     }
 
     @PostMapping
-    public ResponseEntity<String> addFlight(@RequestBody FlightDto newFlight){
+    public ResponseEntity<?> addFlight(@RequestBody FlightDto newFlight) {
+        FlightEntity flightEntity = flightService.save(newFlight);
+        return ResponseEntity.status(HttpStatus.OK).body(flightEntity);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body("add successfully");
+    @PutMapping
+    public ResponseEntity<?> updateFlight(@RequestBody FlightDto newFlight) {
+        FlightEntity flightEntity = flightService.save(newFlight);
+        return ResponseEntity.status(HttpStatus.OK).body(flightEntity);
     }
 }
