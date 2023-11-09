@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface AirportService {
     List<AirportEntity> findAll();
+    List<AirportDto> findAllAirports();
 
     AirportEntity save(AirportDto airport);
 }

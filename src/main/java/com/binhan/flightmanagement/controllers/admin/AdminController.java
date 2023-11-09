@@ -1,16 +1,30 @@
 package com.binhan.flightmanagement.controllers.admin;
 
+import com.binhan.flightmanagement.dto.AirportDto;
+import com.binhan.flightmanagement.dto.CountryDto;
+import com.binhan.flightmanagement.dto.FlightDto;
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.dto.response.APIResponse;
-import com.binhan.flightmanagement.service.AdminService;
-import com.binhan.flightmanagement.service.UserService;
+import com.binhan.flightmanagement.dto.response.BaseResponse;
+import com.binhan.flightmanagement.repository.FlightRepository;
+import com.binhan.flightmanagement.service.*;
+import com.binhan.flightmanagement.util.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -20,10 +34,18 @@ public class AdminController {
 
     private AdminService adminService;
 
+    private CountryService countryService;
+    private AirportService airportService;
+    private FlightService flightService;
+
     @Autowired
-    public AdminController(UserService userService, AdminService adminService) {
+    public AdminController(UserService userService, AdminService adminService,CountryService countryService,
+                           AirportService airportService,FlightService flightService) {
         this.userService = userService;
         this.adminService = adminService;
+        this.countryService=countryService;
+        this.airportService=airportService;
+        this.flightService=flightService;
     }
 
     /**
@@ -55,6 +77,36 @@ public class AdminController {
                                                             @RequestParam(value = "field",required = false) String field) {
         Page<UserDto> usersPaging = adminService.findUsersWithPaginationAndSorting(offset, pageSize, field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(usersPaging.getSize(), usersPaging));
+    }
+
+    @PostMapping("import")
+    public ResponseEntity<BaseResponse> importData(@RequestParam("file")MultipartFile importFile){
+        BaseResponse baseResponse = adminService.importData(importFile);
+        return ResponseEntity.ok(baseResponse);
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportData() throws Exception {
+        List<CountryDto> countryDtos = countryService.findAllCountries();
+        List<AirportDto> airportDtos = airportService.findAllAirports();
+        List<FlightDto> flightDtos = flightService.findAllFlights();
+
+        if (!CollectionUtils.isEmpty(countryDtos)) {
+            String fileName = "Data export" + ".xlsx";
+
+            ByteArrayInputStream in = ExcelUtils.exportToExcel(countryDtos,airportDtos,flightDtos, fileName);
+
+            InputStreamResource inputStreamResource = new InputStreamResource(in);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+                    )
+                    .contentType(MediaType.parseMediaType("application/vnd.ms-excel; charset=UTF-8"))
+                    .body(inputStreamResource);
+        } else {
+            throw new Exception("No data");
+        }
     }
 
 }

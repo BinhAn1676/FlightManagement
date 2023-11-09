@@ -8,10 +8,11 @@ import java.util.List;
 
 public interface CountryService {
     List<CountryEntity> findAll();
+    List<CountryDto> findAllCountries();
 
     CountryEntity save(CountryDto newCountry);
 
     void delete(Long id);
 
-    void saveCountriesByExcel(MultipartFile file);
+    //void saveCountriesByExcel(MultipartFile file);
 }

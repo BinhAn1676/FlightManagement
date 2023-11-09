@@ -35,4 +35,9 @@ public class FlightServiceImpl implements FlightService {
         FlightEntity flightEntity = flightConverter.convertToEntity(newFlight);
         return flightRepository.save(flightEntity);
     }
+
+    @Override
+    public List<FlightDto> findAllFlights() {
+        return null;
+    }
 }

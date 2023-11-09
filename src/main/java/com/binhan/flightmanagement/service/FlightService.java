@@ -9,4 +9,6 @@ public interface FlightService {
     List<FlightEntity> findAll();
 
     FlightEntity save(FlightDto newFlight);
+
+    List<FlightDto> findAllFlights();
 }

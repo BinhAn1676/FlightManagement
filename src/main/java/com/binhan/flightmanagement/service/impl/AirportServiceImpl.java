@@ -29,6 +29,11 @@ public class AirportServiceImpl implements AirportService {
     }
 
     @Override
+    public List<AirportDto> findAllAirports() {
+        return null;
+    }
+
+    @Override
     public AirportEntity save(AirportDto airport) {
         AirportEntity airportEntity= airportConverter.convertToEntity(airport);
         return airportRepository.save(airportEntity);

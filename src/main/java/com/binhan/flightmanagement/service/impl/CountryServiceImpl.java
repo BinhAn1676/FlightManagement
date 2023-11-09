@@ -1,20 +1,17 @@
 package com.binhan.flightmanagement.service.impl;
 
+import com.binhan.flightmanagement.converter.CountryConverter;
 import com.binhan.flightmanagement.dto.CountryDto;
-import com.binhan.flightmanagement.models.AirportEntity;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.repository.AirportRepository;
 import com.binhan.flightmanagement.repository.CountryRepository;
 import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.service.CountryService;
-import com.binhan.flightmanagement.util.ExcelUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,20 +22,30 @@ public class CountryServiceImpl implements CountryService {
     private CountryRepository countryRepository;
     private AirportRepository airportRepository;
     private FlightRepository flightRepository;
-    private ExcelUpload excelUpload;
+    private CountryConverter countryConverter;
 
     @Autowired
     public CountryServiceImpl(CountryRepository countryRepository,AirportRepository airportRepository,
-                              FlightRepository flightRepository,ExcelUpload excelUpload){
+                              FlightRepository flightRepository, CountryConverter countryConverter){
         this.countryRepository=countryRepository;
         this.flightRepository=flightRepository;
         this.airportRepository=airportRepository;
-        this.excelUpload=excelUpload;
+        this.countryConverter=countryConverter;
     }
 
     @Override
     public List<CountryEntity> findAll() {
         return countryRepository.findAll();
+    }
+
+    @Override
+    public List<CountryDto> findAllCountries() {
+        List<CountryEntity> countryEntities= countryRepository.findAll();
+        List<CountryDto> countryDtos = countryEntities
+                .stream()
+                .map(item -> countryConverter.convertToDto(item))
+                .collect(Collectors.toList());
+        return countryDtos;
     }
 
     @Override
@@ -49,7 +56,7 @@ public class CountryServiceImpl implements CountryService {
         }else{
             countryEntity = new CountryEntity();
         }
-        countryEntity.setCountryName(country.getName());
+        countryEntity.setCountryName(country.getCountryName());
         return countryRepository.save(countryEntity);
     }
 
@@ -70,7 +77,7 @@ public class CountryServiceImpl implements CountryService {
         countryRepository.deleteById(id);
     }
 
-    @Override
+    /*@Override
     public void saveCountriesByExcel(MultipartFile file) {
         if(excelUpload.isValidExcelFile(file)){
             try {
@@ -84,6 +91,6 @@ public class CountryServiceImpl implements CountryService {
                 throw new IllegalArgumentException("The file is not a valid excel file");
             }
         }
-    }
+    }*/
 
 }

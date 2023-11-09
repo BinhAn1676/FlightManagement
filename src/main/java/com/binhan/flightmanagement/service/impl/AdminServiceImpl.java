@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.UserConverter;
 import com.binhan.flightmanagement.dto.UserDto;
+import com.binhan.flightmanagement.dto.response.BaseResponse;
 import com.binhan.flightmanagement.models.UserEntity;
 import com.binhan.flightmanagement.repository.UserRepository;
 import com.binhan.flightmanagement.service.AdminService;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +81,11 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return userEntities.map(this::mapToUserDto);
+    }
+
+    @Override
+    public BaseResponse importData(MultipartFile importFile) {
+        return null;
     }
 
     private UserDto mapToUserDto(UserEntity user) {

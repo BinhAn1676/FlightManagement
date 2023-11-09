@@ -55,7 +55,7 @@ public class CountryController {
 
     @PostMapping("/upload-country-data")
     public ResponseEntity<?> uploadCountriesData(@RequestParam("file")MultipartFile file){
-        countryService.saveCountriesByExcel(file);
+        //countryService.saveCountriesByExcel(file);
         return ResponseEntity.ok(Map.of("Message","Countries data uploaded successfully"));
     }
 

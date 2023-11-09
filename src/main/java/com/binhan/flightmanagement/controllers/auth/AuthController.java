@@ -6,7 +6,6 @@ import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.LoginDto;
 import com.binhan.flightmanagement.dto.request.NewPassword;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
-import com.binhan.flightmanagement.dto.response.ResponseDto;
 import com.binhan.flightmanagement.security.JWTGenerator;
 import com.binhan.flightmanagement.service.EmailSenderService;
 import com.binhan.flightmanagement.service.UserService;
