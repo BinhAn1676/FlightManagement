@@ -1,10 +1,7 @@
 package com.binhan.flightmanagement.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,6 +9,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "airports")
 public class AirportEntity {
@@ -27,4 +25,9 @@ public class AirportEntity {
     @JsonIgnoreProperties("airports")
     private CountryEntity country;
 
+    public AirportEntity(String airportName, String location, CountryEntity country) {
+        this.airportName = airportName;
+        this.location = location;
+        this.country = country;
+    }
 }

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 
@@ -40,10 +42,10 @@ public class FlightConverter {
     public FlightEntity convertToEntity(FlightDto newFlight) {
         FlightEntity flightEntity ;
         if(newFlight.getId()!=null){
-            flightEntity=flightRepository.findById(newFlight.getId()).get();
-            if(flightEntity==null){
+            flightEntity=flightRepository.findById(newFlight.getId()).orElse(new FlightEntity());
+            /*if(flightEntity==null){
                 throw new FlightNotFoundException("Cant find the flight");
-            }
+            }*/
         }else{
             flightEntity = new FlightEntity();
         }
@@ -54,15 +56,58 @@ public class FlightConverter {
             AircraftEntity aircraftEntity= aircraftRepository.findById(newFlight.getAircraftId()).get();
             flightEntity.setAircraft(aircraftEntity);
         }
-        if(newFlight.getDepartureAirportId()!=null){
-            AirportEntity departureAirport = airportRepository.findById(newFlight.getDepartureAirportId()).get();
+        if(newFlight.getDepartureAirport()!=null){
+            AirportEntity departureAirport = airportRepository.findByAirportName(newFlight.getDepartureAirport());
             flightEntity.setDepartureAirport(departureAirport);
         }
-        if(newFlight.getArrivalAirportId()!=null){
-            AirportEntity arrivalAirport = airportRepository.findById(newFlight.getArrivalAirportId()).get();
+        if(newFlight.getArrivalAirport()!=null){
+            AirportEntity arrivalAirport = airportRepository.findByAirportName(newFlight.getArrivalAirport());
             flightEntity.setArrivalAirport(arrivalAirport);
         }
         flightEntity = parseDate(flightEntity,newFlight);
+        return flightEntity;
+    }
+
+    public FlightEntity convertToEntityFromExcel(FlightDto newFlight) {
+        FlightEntity flightEntity ;
+        if(newFlight.getId()!=null){
+            flightEntity=flightRepository.findById(newFlight.getId()).orElse(new FlightEntity());
+            /*if(flightEntity==null){
+                throw new FlightNotFoundException("Cant find the flight");
+            }*/
+        }else{
+            flightEntity = new FlightEntity();
+        }
+        flightEntity.setSeats(newFlight.getSeats());
+        flightEntity.setStatus(newFlight.getStatus());
+        flightEntity.setTicketPrice(newFlight.getTicketPrice());
+        if(newFlight.getAircraftId()!=null){
+            AircraftEntity aircraftEntity= aircraftRepository.findById(newFlight.getAircraftId()).get();
+            flightEntity.setAircraft(aircraftEntity);
+        }
+        if(newFlight.getDepartureAirport()!=null){
+            AirportEntity departureAirport = airportRepository.findByAirportName(newFlight.getDepartureAirport());
+            flightEntity.setDepartureAirport(departureAirport);
+        }
+        if(newFlight.getArrivalAirport()!=null){
+            AirportEntity arrivalAirport = airportRepository.findByAirportName(newFlight.getArrivalAirport());
+            flightEntity.setArrivalAirport(arrivalAirport);
+        }
+        flightEntity = parseDateFromExcel(flightEntity,newFlight);
+        return flightEntity;
+    }
+
+    private FlightEntity parseDateFromExcel(FlightEntity flightEntity, FlightDto newFlight) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        try {
+            flightEntity.setArrivalTime(dateFormat.parse(newFlight.getArrivalTime()));
+            flightEntity.setDepartureTime(dateFormat.parse(newFlight.getDepartureTime()));
+            if(flightEntity.getDepartureTime().compareTo(flightEntity.getArrivalTime())>=0){
+                throw new WrongDateLogicException("Illegal date");
+            }
+        } catch (ParseException e) {
+            throw new WrongDateFormatException("wrong date format");
+        }
         return flightEntity;
     }
 
@@ -78,5 +123,19 @@ public class FlightConverter {
             throw new WrongDateFormatException("wrong date format");
         }
         return flightEntity;
+    }
+
+    public FlightDto convertDto(FlightEntity flightEntity){
+        FlightDto flightDto = new FlightDto();
+        flightDto.setSeats(flightEntity.getSeats());
+        flightDto.setId(flightEntity.getId());
+        flightDto.setStatus(flightEntity.getStatus());
+        flightDto.setTicketPrice(flightEntity.getTicketPrice());
+        flightDto.setAircraftId(flightEntity.getAircraft().getId());
+        flightDto.setArrivalAirport(flightEntity.getArrivalAirport().getAirportName());
+        flightDto.setDepartureAirport(flightEntity.getDepartureAirport().getAirportName());
+        flightDto.setArrivalTime(flightEntity.getArrivalTime().toString());
+        flightDto.setDepartureTime(flightEntity.getDepartureTime().toString());
+        return flightDto;
     }
 }

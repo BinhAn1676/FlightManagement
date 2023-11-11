@@ -9,4 +9,6 @@ public interface AircraftService {
     List<AircraftDto> findAll();
 
     AircraftEntity save(AircraftDto aircraftDto);
+
+    void saveAircraftsByExcel(List<AircraftEntity> aircraftEntities);
 }

@@ -1,30 +1,69 @@
 package com.binhan.flightmanagement.service.impl;
 
-import com.binhan.flightmanagement.converter.UserConverter;
-import com.binhan.flightmanagement.dto.UserDto;
+import com.binhan.flightmanagement.converter.*;
+import com.binhan.flightmanagement.dto.*;
 import com.binhan.flightmanagement.dto.response.BaseResponse;
-import com.binhan.flightmanagement.models.UserEntity;
-import com.binhan.flightmanagement.repository.UserRepository;
-import com.binhan.flightmanagement.service.AdminService;
+import com.binhan.flightmanagement.models.*;
+import com.binhan.flightmanagement.repository.*;
+import com.binhan.flightmanagement.service.*;
+import com.binhan.flightmanagement.util.ExcelUtils;
+import com.binhan.flightmanagement.util.FileFactory;
+import com.binhan.flightmanagement.util.ImportConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
+@Transactional
 public class AdminServiceImpl implements AdminService {
 
     private UserRepository userRepository;
     private UserConverter userConverter;
+    private CountryRepository countryRepository;
+    private AirportRepository airportRepository;
+    private FlightRepository flightRepository;
+
+    private CountryConverter countryConverter;
+    private AirportConverter airportConverter;
+    private FlightConverter flightConverter;
+    private AircraftConverter aircraftConverter;
+    private AircraftRepository aircraftRepository;
+    private CountryService countryService;
+    private AirportService airportService;
+    private FlightService flightService;
+    private AircraftService aircraftService;
 
     @Autowired
-    public AdminServiceImpl(UserRepository userRepository,UserConverter userConverter){
+    public AdminServiceImpl(UserRepository userRepository, UserConverter userConverter,
+                            CountryRepository countryRepository, AirportRepository airportRepository,
+                            FlightRepository flightRepository, CountryConverter countryConverter,
+                            AirportConverter airportConverter, FlightConverter flightConverter,
+                            AircraftConverter aircraftConverter, AircraftRepository aircraftRepository,
+                            CountryService countryService, AirportService airportService,
+                            FlightService flightService, AircraftService aircraftService){
+        this.flightService=flightService;
+        this.aircraftService=aircraftService;
+        this.airportService=airportService;
+        this.aircraftRepository=aircraftRepository;
+        this.countryService= countryService;
+        this.aircraftConverter=aircraftConverter;
+        this.airportRepository=airportRepository;
+        this.countryRepository=countryRepository;
+        this.flightRepository=flightRepository;
         this.userRepository=userRepository;
         this.userConverter=userConverter;
+        this.countryConverter=countryConverter;
+        this.airportConverter=airportConverter;
+        this.flightConverter=flightConverter;
     }
 
     @Override
@@ -85,8 +124,43 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public BaseResponse importData(MultipartFile importFile) {
-        return null;
+        BaseResponse baseResponse = new BaseResponse();
+        var workbook = FileFactory.getWorkbookStream(importFile);
+        //get data from workbook
+        List<CountryDto> countryDtos = ExcelUtils.getImportData(workbook, ImportConfig.countryImport);
+        List<AirportDto> airportDtos = ExcelUtils.getImportData(workbook,ImportConfig.airportImport);
+        List<FlightDto> flightDtos = ExcelUtils.getImportData(workbook,ImportConfig.flightImport);
+        List<AircraftDto> aircraftDtos = ExcelUtils.getImportData(workbook,ImportConfig.aircraftImport);
+        //convert to Entity and save
+        List<CountryEntity> countryEntities = countryDtos
+                .stream()
+                .map(item -> countryConverter.convertToEntity(item))
+                .collect(Collectors.toList());
+        countryService.saveCountríeByExcel(countryEntities);
+
+        List<AirportEntity> airportEntities = airportDtos.stream()
+                .map(item -> airportConverter.convertToEntity(item))
+                .collect(Collectors.toList());
+        airportService.saveAirportsByExcel(airportEntities);
+
+        List<FlightEntity> flightEntities = flightDtos
+                .stream()
+                .map(item -> flightConverter.convertToEntityFromExcel(item))
+                .collect(Collectors.toList());
+        flightService.saveFlightsByExcel(flightEntities);
+
+        List<AircraftEntity> aircraftEntities = aircraftDtos
+                .stream()
+                .map(item -> aircraftConverter.convertToEntity(item))
+                .collect(Collectors.toList());
+        aircraftService.saveAircraftsByExcel(aircraftEntities);
+
+        baseResponse.setCode(String.valueOf(HttpStatus.OK));
+        baseResponse.setMessage("Import successfully");
+        return baseResponse;
     }
+
+
 
     private UserDto mapToUserDto(UserEntity user) {
         UserDto userDto = new UserDto();

@@ -17,5 +17,5 @@ public class AirportDto {
     private Long id;
     private String airportName;
     private String location;
-    private Long countryId;
+    private String countryName;
 }

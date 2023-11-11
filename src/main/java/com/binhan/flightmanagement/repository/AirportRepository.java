@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface AirportRepository extends JpaRepository<AirportEntity,Long> {
     void deleteByIdIn(List<Long> ids);
+    AirportEntity findByAirportName(String name);
+
 }

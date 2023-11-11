@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,10 +21,14 @@ public class CountryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @UniqueElements
     private String countryName;
 
     @OneToMany(mappedBy = "country",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnoreProperties("country")
     private List<AirportEntity> airports = new ArrayList<>();
+
+    public CountryEntity(String countryName){
+        this.countryName=countryName;
+    }
 }

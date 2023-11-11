@@ -8,10 +8,12 @@ import com.binhan.flightmanagement.repository.AirportRepository;
 import com.binhan.flightmanagement.repository.CountryRepository;
 import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.service.CountryService;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -75,6 +77,19 @@ public class CountryServiceImpl implements CountryService {
         flightRepository.deleteByIdIn(ids);
         airportRepository.deleteByIdIn(airportsId);
         countryRepository.deleteById(id);
+    }
+
+    @Override
+    public void saveCountríeByExcel(List<CountryEntity> countryEntities) {
+        List<CountryEntity>countries = new ArrayList<>();
+        for (CountryEntity item:countryEntities) {
+            CountryEntity country = countryRepository.findByCountryName(item.getCountryName());
+            if(country==null){
+                country = new CountryEntity(item.getCountryName());
+            }
+            countries.add(country);
+        }
+        countryRepository.saveAllAndFlush(countries);
     }
 
     /*@Override

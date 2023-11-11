@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.util;
 
+import com.binhan.flightmanagement.dto.AircraftDto;
 import com.binhan.flightmanagement.dto.AirportDto;
 import com.binhan.flightmanagement.dto.CountryDto;
 import com.binhan.flightmanagement.dto.FlightDto;
@@ -29,7 +30,8 @@ public class ImportConfig {
         countryImport.setStartRow(1);
         countryImport.setDataClass(CountryDto.class);
         List<CellConfig> countryImportCellConfigs = new ArrayList<>();
-        countryImportCellConfigs.add(new CellConfig(0, "countryName"));
+        countryImportCellConfigs.add(new CellConfig(0, "id"));
+        countryImportCellConfigs.add(new CellConfig(1, "countryName"));
         countryImport.setCellImportConfigs(countryImportCellConfigs);
     }
     public static final ImportConfig airportImport;
@@ -40,9 +42,10 @@ public class ImportConfig {
         airportImport.setStartRow(1);
         airportImport.setDataClass(AirportDto.class);
         List<CellConfig> airportImportCellConfigs = new ArrayList<>();
-        airportImportCellConfigs.add(new CellConfig(0, "AirportName"));
-        airportImportCellConfigs.add(new CellConfig(1, "Location"));
-        airportImportCellConfigs.add(new CellConfig(2, "CountryId"));
+        airportImportCellConfigs.add(new CellConfig(0, "id"));
+        airportImportCellConfigs.add(new CellConfig(1, "airportName"));
+        airportImportCellConfigs.add(new CellConfig(2, "location"));
+        airportImportCellConfigs.add(new CellConfig(3, "countryName"));
         airportImport.setCellImportConfigs(airportImportCellConfigs);
     }
     public static final ImportConfig flightImport;
@@ -53,14 +56,28 @@ public class ImportConfig {
         flightImport.setStartRow(1);
         flightImport.setDataClass(FlightDto.class);
         List<CellConfig> flightImportCellConfigs = new ArrayList<>();
-        flightImportCellConfigs.add(new CellConfig(0, "departureTime"));
-        flightImportCellConfigs.add(new CellConfig(1, "arrivalTime"));
-        flightImportCellConfigs.add(new CellConfig(2, "status"));
-        flightImportCellConfigs.add(new CellConfig(3, "seats"));
-        flightImportCellConfigs.add(new CellConfig(4, "ticketPrice"));
-        flightImportCellConfigs.add(new CellConfig(5, "departureAirportId"));
-        flightImportCellConfigs.add(new CellConfig(6, "arrivalAirportId"));
-        flightImportCellConfigs.add(new CellConfig(7, "aircraftId"));
+        flightImportCellConfigs.add(new CellConfig(0, "id"));
+        flightImportCellConfigs.add(new CellConfig(1, "departureTime"));
+        flightImportCellConfigs.add(new CellConfig(2, "arrivalTime"));
+        flightImportCellConfigs.add(new CellConfig(3, "status"));
+        flightImportCellConfigs.add(new CellConfig(4, "seats"));
+        flightImportCellConfigs.add(new CellConfig(5, "ticketPrice"));
+        flightImportCellConfigs.add(new CellConfig(6, "departureAirport"));
+        flightImportCellConfigs.add(new CellConfig(7, "arrivalAirport"));
+        flightImportCellConfigs.add(new CellConfig(8, "aircraftId"));
         flightImport.setCellImportConfigs(flightImportCellConfigs);
+    }
+    public static final ImportConfig aircraftImport;
+    static{
+        aircraftImport= new ImportConfig();
+        aircraftImport.setSheetIndex(3);
+        aircraftImport.setStartRow(1);
+        aircraftImport.setDataClass(AircraftDto.class);
+        List<CellConfig> aircraftImportCellConfigs = new ArrayList<>();
+        aircraftImportCellConfigs.add(new CellConfig(0, "id"));
+        aircraftImportCellConfigs.add(new CellConfig(1, "aircraftName"));
+        aircraftImportCellConfigs.add(new CellConfig(2, "seats"));
+        aircraftImportCellConfigs.add(new CellConfig(3, "type"));
+        aircraftImport.setCellImportConfigs(aircraftImportCellConfigs);
     }
 }

@@ -21,4 +21,8 @@ public class CountryConverter {
         return countryDto;
     }
 
+    public CountryEntity convertToEntity(CountryDto countryDto) {
+        CountryEntity country = modelMapper.map(countryDto,CountryEntity.class);
+        return country;
+    }
 }

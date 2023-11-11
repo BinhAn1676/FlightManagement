@@ -19,9 +19,9 @@ public class FlightDto {
 
     private Double ticketPrice;
 
-    private Long departureAirportId;
+    private String departureAirport;
 
-    private Long arrivalAirportId;
+    private String arrivalAirport;
 
     private Long aircraftId;
 }

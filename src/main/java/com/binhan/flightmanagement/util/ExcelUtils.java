@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.util;
 
+import com.binhan.flightmanagement.dto.AircraftDto;
 import com.binhan.flightmanagement.dto.AirportDto;
 import com.binhan.flightmanagement.dto.CountryDto;
 import com.binhan.flightmanagement.dto.FlightDto;
@@ -15,16 +16,24 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.binhan.flightmanagement.util.FileFactory.PATH_TEMPLATE;
 
 @Component
 @Slf4j
 public class ExcelUtils {
-
+    //export
     public static ByteArrayInputStream exportToExcel(List<CountryDto> countryDtos, List<AirportDto>  airportDtos,
-                                                     List<FlightDto> flightDtos,String fileName) throws IOException {
+                                                     List<FlightDto> flightDtos, List<AircraftDto> aircraftDtos,
+                                                     String fileName) throws IOException {
         XSSFWorkbook xssfWorkbook = new XSSFWorkbook();
         File file;
         FileInputStream fileInputStream;
@@ -36,21 +45,35 @@ public class ExcelUtils {
             file = FileFactory.createFile(fileName,xssfWorkbook);
             fileInputStream= new FileInputStream(file);
         }
+
+        processInsertData(xssfWorkbook, countryDtos,airportDtos,flightDtos,aircraftDtos);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        xssfWorkbook.write(outputStream);
+        outputStream.close();
+        fileInputStream.close();
+        return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+    private static void processInsertData(XSSFWorkbook xssfWorkbook, List<CountryDto> countryDtos,
+                                          List<AirportDto> airportDtos, List<FlightDto> flightDtos,
+                                          List<AircraftDto> aircraftDtos) {
         //create freeze pane in excel file
         XSSFSheet countrySheet = xssfWorkbook.createSheet("country");
-        //countrySheet.createFreezePane(4, 2, 4, 2);
-        countrySheet.createFreezePane(0, 1, 0, 1);
+        countrySheet.createFreezePane(4, 2, 4, 2);
+        //countrySheet.createFreezePane(0, 1, 0, 1);
 
 
         XSSFSheet airportSheet = xssfWorkbook.createSheet("airport");
-        //airportSheet.createFreezePane(4, 2, 4, 2);
-        airportSheet.createFreezePane(0, 1, 0, 1);
+        airportSheet.createFreezePane(4, 2, 4, 2);
+        //airportSheet.createFreezePane(0, 1, 0, 1);
 
 
         XSSFSheet flightSheet = xssfWorkbook.createSheet("flight");
-        //flightSheet.createFreezePane(4, 2, 4, 2);
-        flightSheet.createFreezePane(0,1,0,1);
+        flightSheet.createFreezePane(4, 2, 4, 2);
+        //flightSheet.createFreezePane(0,1,0,1);
 
+        XSSFSheet aircraftSheet = xssfWorkbook.createSheet("aircraft");
+        aircraftSheet.createFreezePane(4, 2, 4, 2);
 
         //create font for title
         XSSFFont titleFont=xssfWorkbook.createFont();
@@ -87,21 +110,19 @@ public class ExcelUtils {
         dataCellStyle.setWrapText(true);
 
         insertFieldNameToWorkbook(ExportConfig.countryExport.getCellExportConfigList(),countrySheet,titleCellStyle);
-        insertFieldNameToWorkbook(ExportConfig.airportExport.getCellExportConfigList(),countrySheet,titleCellStyle);
-        insertFieldNameToWorkbook(ExportConfig.flightExport.getCellExportConfigList(),countrySheet,titleCellStyle);
+        insertFieldNameToWorkbook(ExportConfig.airportExport.getCellExportConfigList(),airportSheet,titleCellStyle);
+        insertFieldNameToWorkbook(ExportConfig.flightExport.getCellExportConfigList(),flightSheet,titleCellStyle);
+        insertFieldNameToWorkbook(ExportConfig.aircraftExport.getCellExportConfigList(),aircraftSheet,titleCellStyle);
 
         //insert data of fieldName to excel
         insertDataToWorkbook(xssfWorkbook, ExportConfig.countryExport, countryDtos, dataCellStyle);
 
-        //insertDataToWorkbook(xssfWorkbook, ExportConfig.airportExport, airportDtos, dataCellStyle);
+        insertDataToWorkbook(xssfWorkbook, ExportConfig.airportExport, airportDtos, dataCellStyle);
 
-        //insertDataToWorkbook(xssfWorkbook, ExportConfig.flightExport, flightDtos, dataCellStyle);
+        insertDataToWorkbook(xssfWorkbook, ExportConfig.flightExport, flightDtos, dataCellStyle);
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        xssfWorkbook.write(outputStream);
-        outputStream.close();
-        fileInputStream.close();
-        return new ByteArrayInputStream(outputStream.toByteArray());
+        insertDataToWorkbook(xssfWorkbook, ExportConfig.aircraftExport, aircraftDtos, dataCellStyle);
+
     }
 
     private static <T> void insertDataToWorkbook(Workbook workbook,ExportConfig exportConfig,List<T> datas,
@@ -200,4 +221,288 @@ public class ExcelUtils {
         }
     }
 
+    //import
+    public static <T> List<T> getImportData(Workbook workbook, ImportConfig importConfig) {
+        List<T> list = new ArrayList<>();
+
+        List<CellConfig> cellConfigs = importConfig.getCellImportConfigs();
+
+        int countSheet = 0;
+
+        for (Sheet sheet : workbook) {
+            if (countSheet != importConfig.getSheetIndex()) {
+                countSheet++;
+                continue;
+            }
+
+            int countRow = 0;
+            for (Row row : sheet) {
+                if (countRow < importConfig.getStartRow()) {
+                    countRow++;
+                    continue;
+                }
+                T rowData = getRowData(row, cellConfigs, importConfig.getDataClass());
+                list.add(rowData);
+                countRow++;
+            }
+            countSheet++;
+        }
+        return list;
+    }
+
+    private static <T> T getRowData(Row row, List<CellConfig> cellConfigs, Class dataClass) {
+        T instance = null;
+        try {
+            instance = (T) dataClass.getDeclaredConstructor().newInstance();
+
+            for (int i = 0; i < cellConfigs.size(); i++) {
+                CellConfig currentCell = cellConfigs.get(i);
+                try {
+                    Field field = getDeclaredField(dataClass, currentCell.getFieldName());
+
+                    Cell cell = row.getCell(currentCell.getColumnIndex());
+                    if (!ObjectUtils.isEmpty(cell)) {
+                        cell.setCellType(CellType.STRING);
+
+                        Object cellValue = cell.getStringCellValue();
+
+                        setFieldValue(instance, field, cellValue);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return instance;
+    }
+    private static <T> void setFieldValue(Object instance, Field field, Object cellValue) {
+        if (ObjectUtils.isEmpty(instance) || ObjectUtils.isEmpty(field)) {
+            return;
+        }
+
+        Class clazz = field.getType();
+
+        Object valueConverted = parseValueByClass(clazz, cellValue);
+
+        field.setAccessible(true);
+
+        try {
+            field.set(instance, valueConverted);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Object parseValueByClass(Class clazz, Object cellValue) {
+        if (ObjectUtils.isEmpty(cellValue) || ObjectUtils.isEmpty(clazz)) {
+            return null;
+        }
+        String clazzName = clazz.getSimpleName();
+
+        switch (clazzName) {
+            case "char":
+                cellValue = parseChar(cellValue);
+                break;
+            case "String":
+                cellValue = cellValue.toString().trim();
+                break;
+            case "boolean":
+            case "Boolean":
+                cellValue = parseBoolean(cellValue);
+                break;
+            case "byte":
+            case "Byte":
+                cellValue = parseByte(cellValue);
+                break;
+            case "short":
+            case "Short":
+                cellValue = parseShort(cellValue);
+                break;
+            case "int":
+            case "Integer":
+                cellValue = parseInt(cellValue);
+                break;
+            case "long":
+            case "Long":
+                cellValue = parseLong(cellValue);
+                break;
+            case "float":
+            case "Float":
+                cellValue = parseFloat(cellValue);
+                break;
+            case "double":
+            case "Double":
+                cellValue = parseDouble(cellValue);
+                break;
+            case "Date":
+                cellValue = parseDate(cellValue);
+                break;
+            case "Instant":
+                cellValue = parseInstant(cellValue);
+                break;
+            case "Enum":
+                cellValue = parseEnum(cellValue, clazz);
+                break;
+            case "Map":
+                cellValue = parseMap(cellValue);
+                break;
+            case "BigDecimal":
+                cellValue = parseBigDecimal(cellValue);
+                break;
+            default:
+                break;
+        }
+        return cellValue;
+    }
+
+
+    private static Object parseChar(Object value) {
+        return ObjectUtils.isEmpty(value) ? null : (char) value;
+    }
+
+
+    private static Object parseBoolean(Object value) {
+        return ObjectUtils.isEmpty(value) ? null : (Boolean) value;
+    }
+
+    private static Object parseMap(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+        return (Map) value;
+    }
+
+    private static Object parseEnum(Object value, Class clazz) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        String valueStr = value.toString().trim();
+        return Enum.valueOf(clazz, valueStr);
+    }
+
+    private static Date parseDate(Object value) {
+        /*String[] formatsDate = {"yyyy-MM-dd HH:mm:ss", "dd/MM/yyyy"};
+        String dateFormat=new String("hh:mm dd/MM/yyyy");
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        String dateStr = value.toString();
+        for (String format : formatsDate) {
+            Date date = null;
+
+            try {
+                DateFormat dateFormat = new SimpleDateFormat(format);
+                date = dateFormat.parse(dateStr);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (ObjectUtils.isEmpty(date)) {
+                return date;
+            }
+        }
+
+        try {
+            Date date = (Date) value;
+            return date;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Date();
+        }*/
+        String format=new String("hh:mm dd/MM/yyyy");
+        String dateStr = value.toString();
+        DateFormat dateFormat = new SimpleDateFormat(format);
+        Date date;
+        try {
+            date = dateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        if (ObjectUtils.isEmpty(date)) {
+            return date;
+        }else{
+            return new Date();
+        }
+    }
+
+    private static Object parseInstant(Object value) {
+        return ObjectUtils.isEmpty(value) ? null : parseDate(value).toInstant();
+    }
+
+    private static Double parseDouble(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        try {
+            return Double.parseDouble(value.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Object parseFloat(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        Double doubleValue = parseDouble(value);
+        return ObjectUtils.isEmpty(doubleValue) ? null : doubleValue.floatValue();
+    }
+
+
+    private static Object parseLong(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        Double longDoubleValue = parseDouble(value);
+        return ObjectUtils.isEmpty(longDoubleValue) ? null : longDoubleValue.longValue();
+    }
+
+    private static Object parseShort(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        Double shortDoubleValue = parseDouble(value);
+        return ObjectUtils.isEmpty(shortDoubleValue) ? null : shortDoubleValue.shortValue();
+    }
+
+    private static Object parseInt(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        Double intDoubleValue = parseDouble(value);
+        return ObjectUtils.isEmpty(intDoubleValue) ? null : intDoubleValue.intValue();
+    }
+
+    private static Object parseBigDecimal(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        try {
+            return BigDecimal.valueOf(Double.valueOf(value.toString()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Object parseByte(Object value) {
+        if (ObjectUtils.isEmpty(value)) {
+            return null;
+        }
+
+        Double byteDoubleValue = parseDouble(value);
+        return ObjectUtils.isEmpty(byteDoubleValue) ? null : byteDoubleValue.byteValue();
+    }
 }

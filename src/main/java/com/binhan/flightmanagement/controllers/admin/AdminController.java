@@ -1,9 +1,6 @@
 package com.binhan.flightmanagement.controllers.admin;
 
-import com.binhan.flightmanagement.dto.AirportDto;
-import com.binhan.flightmanagement.dto.CountryDto;
-import com.binhan.flightmanagement.dto.FlightDto;
-import com.binhan.flightmanagement.dto.UserDto;
+import com.binhan.flightmanagement.dto.*;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.dto.response.BaseResponse;
@@ -37,10 +34,12 @@ public class AdminController {
     private CountryService countryService;
     private AirportService airportService;
     private FlightService flightService;
+    private AircraftService aircraftService;
 
     @Autowired
     public AdminController(UserService userService, AdminService adminService,CountryService countryService,
-                           AirportService airportService,FlightService flightService) {
+                           AirportService airportService,FlightService flightService,AircraftService aircraftService) {
+        this.aircraftService=aircraftService;
         this.userService = userService;
         this.adminService = adminService;
         this.countryService=countryService;
@@ -90,11 +89,11 @@ public class AdminController {
         List<CountryDto> countryDtos = countryService.findAllCountries();
         List<AirportDto> airportDtos = airportService.findAllAirports();
         List<FlightDto> flightDtos = flightService.findAllFlights();
-
+        List<AircraftDto> aircraftDtos = aircraftService.findAll();
         if (!CollectionUtils.isEmpty(countryDtos)) {
             String fileName = "Data export" + ".xlsx";
 
-            ByteArrayInputStream in = ExcelUtils.exportToExcel(countryDtos,airportDtos,flightDtos, fileName);
+            ByteArrayInputStream in = ExcelUtils.exportToExcel(countryDtos,airportDtos,flightDtos,aircraftDtos, fileName);
 
             InputStreamResource inputStreamResource = new InputStreamResource(in);
 

@@ -11,4 +11,6 @@ public interface FlightService {
     FlightEntity save(FlightDto newFlight);
 
     List<FlightDto> findAllFlights();
+
+    void saveFlightsByExcel(List<FlightEntity> flightEntities);
 }

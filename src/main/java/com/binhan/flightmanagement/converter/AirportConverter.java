@@ -27,14 +27,20 @@ public class AirportConverter {
     public AirportEntity convertToEntity(AirportDto airportDto){
         AirportEntity airportEntity;
         if(airportDto.getId()!=null){
-            airportEntity = airportRepository.findById(airportDto.getId()).get();
+            airportEntity = airportRepository.findById(airportDto.getId()).orElse(new AirportEntity());
         }
         airportEntity = modelMapper.map(airportDto,AirportEntity.class);
-        CountryEntity country = countryRepository.findById(airportDto.getCountryId()).get();
+        //CountryEntity country = countryRepository.findById(airportDto.getCountryId()).get();
+        CountryEntity country = countryRepository.findByCountryName(airportDto.getCountryName());
         if(country==null){
-            throw new CountryNotFoundException("Cant find the country");
+            throw new CountryNotFoundException("Cant find the country " + airportDto.getAirportName());
         }
         airportEntity.setCountry(country);
         return airportEntity;
+    }
+    public AirportDto convertToDto(AirportEntity airportEntity){
+        AirportDto airportDto = modelMapper.map(airportEntity,AirportDto.class);
+        airportDto.setCountryName(airportEntity.getCountry().getCountryName());
+        return airportDto;
     }
 }

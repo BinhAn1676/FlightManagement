@@ -10,4 +10,6 @@ public interface AirportService {
     List<AirportDto> findAllAirports();
 
     AirportEntity save(AirportDto airport);
+
+    void saveAirportsByExcel(List<AirportEntity> airportEntities);
 }
