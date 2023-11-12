@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.CountryConverter;
 import com.binhan.flightmanagement.dto.CountryDto;
+import com.binhan.flightmanagement.exception.CountryExistedException;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.repository.AirportRepository;
@@ -57,6 +58,9 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public CountryEntity save(CountryDto country) {
         CountryEntity countryEntity;
+        if(countryRepository.existsByCountryName(country.getCountryName())){
+            throw new CountryExistedException("Country is already in database");
+        }
         if(country.getId()!=null){
             countryEntity=countryRepository.findById(country.getId()).get();
         }else{
@@ -88,15 +92,16 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public void saveCountríeByExcel(List<CountryEntity> countryEntities) {
-        List<CountryEntity>countries = new ArrayList<>();
         for (CountryEntity item:countryEntities) {
-            CountryEntity country = countryRepository.findByCountryName(item.getCountryName());
-            if(country==null){
-                country = new CountryEntity(item.getCountryName());
+            Boolean check = countryRepository.existsByCountryName(item.getCountryName());
+            if(check==false){
+                CountryEntity country = CountryEntity
+                        .builder()
+                        .countryName(item.getCountryName())
+                        .build();
+                countryRepository.saveAndFlush(country);
             }
-            countries.add(country);
         }
-        countryRepository.saveAllAndFlush(countries);
     }
 
     /*@Override

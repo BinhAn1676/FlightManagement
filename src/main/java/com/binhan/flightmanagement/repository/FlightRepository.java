@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -19,8 +20,8 @@ public interface FlightRepository extends JpaRepository<FlightEntity,Long> {
 
     List<FlightEntity> findByAircraft_Id(Long id);
     void deleteByIdIn(List<Long> ids);
-    Boolean existsByAircraftAndDepartureAirportAndArrivalAirportAndStatusAndSeats(AircraftEntity aircraftEntity,
-                                                                                  AirportEntity departureAirport,
-                                                                                  AirportEntity arrivalAirport,
-                                                                                  String status,Integer seats);
+    Boolean existsByAircraftAndDepartureAirportAndArrivalAirportAndStatusAndSeatsAndArrivalTimeAndDepartureTime(AircraftEntity aircraftEntity,
+                                                                                                                AirportEntity departureAirport,
+                                                                                                                AirportEntity arrivalAirport,
+                                                                                                                String status, Integer seats, Date ArrivalTime, Date departureTime);
 }

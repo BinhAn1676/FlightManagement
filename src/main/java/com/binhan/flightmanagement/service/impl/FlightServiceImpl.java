@@ -56,10 +56,9 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public void saveFlightsByExcel(List<FlightEntity> flightEntities) {
-        List<FlightEntity> flights = new ArrayList<>();
         for (FlightEntity item:flightEntities) {
-            Boolean check = flightRepository.existsByAircraftAndDepartureAirportAndArrivalAirportAndStatusAndSeats(item.getAircraft(),
-                    item.getDepartureAirport(),item.getArrivalAirport(),item.getStatus(),item.getSeats());
+            Boolean check = flightRepository.existsByAircraftAndDepartureAirportAndArrivalAirportAndStatusAndSeatsAndArrivalTimeAndDepartureTime(item.getAircraft(),
+                    item.getDepartureAirport(),item.getArrivalAirport(),item.getStatus(),item.getSeats(),item.getArrivalTime(),item.getDepartureTime());
             if(check!=true){
                 FlightEntity flight = FlightEntity
                         .builder()
@@ -72,10 +71,10 @@ public class FlightServiceImpl implements FlightService {
                         .arrivalAirport(item.getArrivalAirport())
                         .ticketPrice(item.getTicketPrice())
                         .build();
-                flights.add(flight);
+                flightRepository.saveAndFlush(flight);
             }
         }
-        flightRepository.saveAllAndFlush(flights);
+
     }
 
     @Override

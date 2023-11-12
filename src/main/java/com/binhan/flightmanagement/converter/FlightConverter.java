@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.converter;
 
 import com.binhan.flightmanagement.controllers.FlightController;
 import com.binhan.flightmanagement.dto.FlightDto;
+import com.binhan.flightmanagement.exception.FlightExistedException;
 import com.binhan.flightmanagement.exception.FlightNotFoundException;
 import com.binhan.flightmanagement.exception.WrongDateFormatException;
 import com.binhan.flightmanagement.exception.WrongDateLogicException;
@@ -65,6 +66,12 @@ public class FlightConverter {
             flightEntity.setArrivalAirport(arrivalAirport);
         }
         flightEntity = parseDate(flightEntity,newFlight);
+        if(flightRepository.existsByAircraftAndDepartureAirportAndArrivalAirportAndStatusAndSeatsAndArrivalTimeAndDepartureTime(flightEntity.getAircraft(),
+                flightEntity.getDepartureAirport(),flightEntity.getArrivalAirport()
+                ,flightEntity.getStatus(),flightEntity.getSeats(),
+                flightEntity.getArrivalTime(),flightEntity.getDepartureTime())){
+            throw new FlightExistedException("flight is already existed in database");
+        }
         return flightEntity;
     }
 

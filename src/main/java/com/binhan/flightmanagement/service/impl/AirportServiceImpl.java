@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.AirportConverter;
 import com.binhan.flightmanagement.dto.AirportDto;
+import com.binhan.flightmanagement.exception.AirportExistedException;
 import com.binhan.flightmanagement.models.AirportEntity;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
@@ -53,24 +54,27 @@ public class AirportServiceImpl implements AirportService {
     @Override
     public AirportEntity save(AirportDto airport) {
         AirportEntity airportEntity= airportConverter.convertToEntity(airport);
+        if(airportRepository.existsByAirportNameAndCountry(airportEntity.getAirportName(),airportEntity.getCountry())){
+            throw new AirportExistedException("Airport is already existed in database");
+        }
         return airportRepository.save(airportEntity);
     }
 
     @Override
     public void saveAirportsByExcel(List<AirportEntity> airportEntities) {
-        List<AirportEntity> airports = new ArrayList<>();
-        for (AirportEntity item:airports) {
-            AirportEntity airport = airportRepository.findByAirportName(item.getAirportName());
-            if(airport==null) {
-                airport= AirportEntity.builder()
+        for (AirportEntity item:airportEntities) {
+            Boolean check = airportRepository.existsByAirportName(item.getAirportName());
+            if(check==false) {
+                AirportEntity airport= AirportEntity.builder()
                         .airportName(item.getAirportName())
                         .location(item.getLocation())
                         .country(item.getCountry())
                         .build();
+                airportRepository.saveAndFlush(airport);
             }
-            airports.add(airport);
+
         }
-        airportRepository.saveAllAndFlush(airports);
+
     }
 
     @Override
