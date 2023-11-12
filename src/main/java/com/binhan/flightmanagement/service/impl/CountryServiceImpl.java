@@ -7,6 +7,7 @@ import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.repository.AirportRepository;
 import com.binhan.flightmanagement.repository.CountryRepository;
 import com.binhan.flightmanagement.repository.FlightRepository;
+import com.binhan.flightmanagement.repository.ReservationRepository;
 import com.binhan.flightmanagement.service.CountryService;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,14 @@ public class CountryServiceImpl implements CountryService {
     private AirportRepository airportRepository;
     private FlightRepository flightRepository;
     private CountryConverter countryConverter;
+    private ReservationRepository reservationRepository;
 
     @Autowired
     public CountryServiceImpl(CountryRepository countryRepository,AirportRepository airportRepository,
-                              FlightRepository flightRepository, CountryConverter countryConverter){
+                              FlightRepository flightRepository, CountryConverter countryConverter,
+                              ReservationRepository reservationRepository){
         this.countryRepository=countryRepository;
+        this.reservationRepository=reservationRepository;
         this.flightRepository=flightRepository;
         this.airportRepository=airportRepository;
         this.countryConverter=countryConverter;
@@ -74,6 +78,9 @@ public class CountryServiceImpl implements CountryService {
                 .distinct()
                 .collect(Collectors.toList());
         List<Long> ids = flights.stream().map(item->item.getId()).collect(Collectors.toList());
+        for (Long item:ids){
+            reservationRepository.deleteByFlight_Id(item);
+        }
         flightRepository.deleteByIdIn(ids);
         airportRepository.deleteByIdIn(airportsId);
         countryRepository.deleteById(id);

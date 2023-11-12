@@ -11,4 +11,6 @@ public interface AircraftService {
     AircraftEntity save(AircraftDto aircraftDto);
 
     void saveAircraftsByExcel(List<AircraftEntity> aircraftEntities);
+
+    void delete(Long id);
 }

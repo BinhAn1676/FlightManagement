@@ -14,6 +14,10 @@ import java.util.Set;
 public interface FlightRepository extends JpaRepository<FlightEntity,Long> {
     List<FlightEntity> findByArrivalAirport_IdIn(List<Long> ids);
     List<FlightEntity> findByDepartureAirport_IdIn(List<Long> ids);
+    List<FlightEntity> findByArrivalAirport_Id(Long id);
+    List<FlightEntity> findByDepartureAirport_Id(Long id);
+
+    List<FlightEntity> findByAircraft_Id(Long id);
     void deleteByIdIn(List<Long> ids);
     Boolean existsByAircraftAndDepartureAirportAndArrivalAirportAndStatusAndSeats(AircraftEntity aircraftEntity,
                                                                                   AirportEntity departureAirport,

@@ -12,4 +12,6 @@ public interface AirportService {
     AirportEntity save(AirportDto airport);
 
     void saveAirportsByExcel(List<AirportEntity> airportEntities);
+
+    void delete(Long id);
 }

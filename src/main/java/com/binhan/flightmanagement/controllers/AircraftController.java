@@ -43,4 +43,10 @@ public class AircraftController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAircraft(@PathVariable("id") Long id){
+        aircraftService.delete(id);
+        return ResponseEntity.ok("Deleted successfully");
+    }
+
 }

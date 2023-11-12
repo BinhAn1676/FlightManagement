@@ -2,9 +2,11 @@ package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.FlightConverter;
 import com.binhan.flightmanagement.dto.FlightDto;
+import com.binhan.flightmanagement.exception.FlightNotFoundException;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.repository.FlightRepository;
+import com.binhan.flightmanagement.repository.ReservationRepository;
 import com.binhan.flightmanagement.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,11 +23,14 @@ public class FlightServiceImpl implements FlightService {
     private FlightRepository flightRepository;
 
     private FlightConverter flightConverter;
+    private ReservationRepository reservationRepository;
 
     @Autowired
-    public FlightServiceImpl(FlightRepository flightRepository,FlightConverter flightConverter){
+    public FlightServiceImpl(FlightRepository flightRepository,FlightConverter flightConverter,
+                             ReservationRepository reservationRepository){
         this.flightRepository=flightRepository;
         this.flightConverter=flightConverter;
+        this.reservationRepository=reservationRepository;
     }
 
     @Override
@@ -71,5 +76,15 @@ public class FlightServiceImpl implements FlightService {
             }
         }
         flightRepository.saveAllAndFlush(flights);
+    }
+
+    @Override
+    public void delete(Long id) {
+        if(flightRepository.existsById(id)){
+            reservationRepository.deleteByFlight_Id(id);
+            flightRepository.deleteById(id);
+        }else{
+            throw new FlightNotFoundException("Cant find the flight");
+        }
     }
 }

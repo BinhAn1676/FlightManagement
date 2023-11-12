@@ -13,4 +13,6 @@ public interface FlightService {
     List<FlightDto> findAllFlights();
 
     void saveFlightsByExcel(List<FlightEntity> flightEntities);
+
+    void delete(Long id);
 }

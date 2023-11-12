@@ -41,23 +41,27 @@ public class ApplicationExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-    public ResponseEntity<String> AuthenticationCredentialsNotFoundException(Exception ex){
+    public ResponseEntity<String> AuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
     @ExceptionHandler(CountryNotFoundException.class)
-    public ResponseEntity<String> CountryNotFoundException(Exception ex){
+    public ResponseEntity<String> CountryNotFoundException(CountryNotFoundException ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(FlightNotFoundException.class)
-    public ResponseEntity<String> FlightNotFoundException(Exception ex){
+    public ResponseEntity<String> FlightNotFoundException(FlightNotFoundException ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
     @ExceptionHandler(WrongDateFormatException.class)
-    public ResponseEntity<String> WrongDateFormatException(Exception ex){
+    public ResponseEntity<String> WrongDateFormatException(WrongDateFormatException ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<String> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> Exception(Exception ex){

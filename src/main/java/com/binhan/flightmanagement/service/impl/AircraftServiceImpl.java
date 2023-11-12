@@ -6,6 +6,8 @@ import com.binhan.flightmanagement.models.AircraftEntity;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.repository.AircraftRepository;
+import com.binhan.flightmanagement.repository.FlightRepository;
+import com.binhan.flightmanagement.repository.ReservationRepository;
 import com.binhan.flightmanagement.service.AircraftService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,11 +22,16 @@ import java.util.stream.Collectors;
 public class AircraftServiceImpl implements AircraftService {
     private AircraftRepository aircraftRepository;
     private AircraftConverter aircraftConverter;
+    private FlightRepository flightRepository;
+    private ReservationRepository reservationRepository;
 
     @Autowired
-    public AircraftServiceImpl(AircraftRepository aircraftRepository, AircraftConverter aircraftConverter) {
+    public AircraftServiceImpl(AircraftRepository aircraftRepository, AircraftConverter aircraftConverter,
+                               FlightRepository flightRepository,ReservationRepository reservationRepository) {
+        this.flightRepository=flightRepository;
         this.aircraftRepository = aircraftRepository;
         this.aircraftConverter = aircraftConverter;
+        this.reservationRepository=reservationRepository;
     }
 
 
@@ -59,5 +66,17 @@ public class AircraftServiceImpl implements AircraftService {
             }
             aircraftRepository.saveAllAndFlush(aircrafts);
         }
+    }
+
+    @Override
+    public void delete(Long id) {
+        List<FlightEntity> flightEntities = flightRepository.findByAircraft_Id(id);
+        List<Long> ids = flightEntities
+                .stream()
+                .map(item -> item.getId())
+                .collect(Collectors.toList());;
+        flightRepository.deleteByIdIn(ids);
+        reservationRepository.deleteByFlight_Id(id);
+        aircraftRepository.deleteById(id);
     }
 }
