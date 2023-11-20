@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.AircraftConverter;
 import com.binhan.flightmanagement.dto.AircraftDto;
+import com.binhan.flightmanagement.exception.AircraftNotFoundException;
 import com.binhan.flightmanagement.models.AircraftEntity;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
@@ -78,5 +79,14 @@ public class AircraftServiceImpl implements AircraftService {
         flightRepository.deleteByIdIn(ids);
         reservationRepository.deleteByFlight_Id(id);
         aircraftRepository.deleteById(id);
+    }
+
+    @Override
+    public AircraftEntity findById(Long id) {
+        AircraftEntity aircraftEntity = aircraftRepository.findById(id).get();
+        if(aircraftEntity==null){
+            throw new AircraftNotFoundException("cant find aircraft");
+        }
+        return aircraftEntity;
     }
 }

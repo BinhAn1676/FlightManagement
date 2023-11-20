@@ -86,4 +86,13 @@ public class FlightServiceImpl implements FlightService {
             throw new FlightNotFoundException("Cant find the flight");
         }
     }
+
+    @Override
+    public FlightEntity findById(Long id) {
+        FlightEntity flightEntity = flightRepository.findById(id).get();
+        if(flightEntity==null){
+            throw new FlightNotFoundException("cant find flight");
+        }
+        return flightEntity;
+    }
 }

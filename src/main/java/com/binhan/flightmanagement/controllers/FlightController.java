@@ -25,6 +25,10 @@ public class FlightController {
     public ResponseEntity<List<FlightEntity>> getAllFlights() {
         return ResponseEntity.status(HttpStatus.OK).body(flightService.findAll());
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<FlightEntity> getFlight(@PathVariable("id")Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(flightService.findById(id));
+    }
 
     @PostMapping
     public ResponseEntity<?> addFlight(@RequestBody FlightDto newFlight) {

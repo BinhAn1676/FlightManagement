@@ -3,6 +3,7 @@ package com.binhan.flightmanagement.service.impl;
 import com.binhan.flightmanagement.converter.CountryConverter;
 import com.binhan.flightmanagement.dto.CountryDto;
 import com.binhan.flightmanagement.exception.CountryExistedException;
+import com.binhan.flightmanagement.exception.CountryNotFoundException;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.repository.AirportRepository;
@@ -10,12 +11,10 @@ import com.binhan.flightmanagement.repository.CountryRepository;
 import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.repository.ReservationRepository;
 import com.binhan.flightmanagement.service.CountryService;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -102,6 +101,15 @@ public class CountryServiceImpl implements CountryService {
                 countryRepository.saveAndFlush(country);
             }
         }
+    }
+
+    @Override
+    public CountryEntity findById(Long id) {
+        CountryEntity country = countryRepository.findById(id).get();
+        if(country==null){
+            throw new CountryNotFoundException("cant find country");
+        }
+        return country;
     }
 
     /*@Override

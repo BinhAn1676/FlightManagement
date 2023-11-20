@@ -28,6 +28,11 @@ public class AirportController {
         return ResponseEntity.status(HttpStatus.OK).body(airportService.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<AirportEntity> getAirport(@PathVariable("id")Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(airportService.findById(id));
+    }
+
     @PostMapping
     public ResponseEntity<?> addAirport(@RequestBody AirportDto airport){
         AirportEntity airportEntity = airportService.save(airport);

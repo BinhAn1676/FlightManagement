@@ -3,6 +3,7 @@ package com.binhan.flightmanagement.service.impl;
 import com.binhan.flightmanagement.converter.AirportConverter;
 import com.binhan.flightmanagement.dto.AirportDto;
 import com.binhan.flightmanagement.exception.AirportExistedException;
+import com.binhan.flightmanagement.exception.AirportNotFoundException;
 import com.binhan.flightmanagement.models.AirportEntity;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FileDataEntity;
@@ -125,6 +126,15 @@ public class AirportServiceImpl implements AirportService {
         String filePath=fileData.get().getFilePath();
         byte[] images = Files.readAllBytes(new File(filePath).toPath());
         return images;
+    }
+
+    @Override
+    public AirportEntity findById(Long id) {
+        AirportEntity airport = airportRepository.findById(id).get();
+        if(airport==null){
+            throw new AirportNotFoundException("cant find airport");
+        }
+        return airport;
     }
 
 }

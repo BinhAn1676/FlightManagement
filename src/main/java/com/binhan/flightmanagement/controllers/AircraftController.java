@@ -22,6 +22,10 @@ public class AircraftController {
     public ResponseEntity<?> getAircrafts(){
         return ResponseEntity.ok(aircraftService.findAll());
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAircraft(@PathVariable("id")Long id){
+        return ResponseEntity.ok(aircraftService.findById(id));
+    }
 
     @PostMapping
     public ResponseEntity<?> addAircraft(@RequestBody AircraftDto aircraftDto){

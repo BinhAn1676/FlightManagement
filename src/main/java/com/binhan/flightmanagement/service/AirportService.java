@@ -20,4 +20,6 @@ public interface AirportService {
     String uploadImageToFileSystem(MultipartFile file) throws IOException;
 
     byte[] downloadImageFromFileSystem(String fileName) throws IOException;
+
+    AirportEntity findById(Long id);
 }
