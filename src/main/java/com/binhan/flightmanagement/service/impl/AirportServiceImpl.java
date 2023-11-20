@@ -5,17 +5,24 @@ import com.binhan.flightmanagement.dto.AirportDto;
 import com.binhan.flightmanagement.exception.AirportExistedException;
 import com.binhan.flightmanagement.models.AirportEntity;
 import com.binhan.flightmanagement.models.CountryEntity;
+import com.binhan.flightmanagement.models.FileDataEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.repository.AirportRepository;
+import com.binhan.flightmanagement.repository.FileDataRepository;
 import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.repository.ReservationRepository;
 import com.binhan.flightmanagement.service.AirportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,10 +33,15 @@ public class AirportServiceImpl implements AirportService {
     private AirportConverter airportConverter;
     private FlightRepository flightRepository;
     private ReservationRepository reservationRepository;
+    private FileDataRepository fileDataRepository;
+
+    private final String FOLDER_PATH="D:\\capture";
 
     @Autowired
     public AirportServiceImpl(AirportRepository airportRepository,AirportConverter airportConverter,
-                              FlightRepository flightRepository,ReservationRepository reservationRepository){
+                              FlightRepository flightRepository,ReservationRepository reservationRepository,
+                              FileDataRepository fileDataRepository){
+        this.fileDataRepository=fileDataRepository;
         this.airportRepository=airportRepository;
         this.reservationRepository=reservationRepository;
         this.flightRepository=flightRepository;
@@ -91,4 +103,28 @@ public class AirportServiceImpl implements AirportService {
         flightRepository.deleteByIdIn(ids);
         airportRepository.deleteById(id);
     }
+    @Override
+    public String uploadImageToFileSystem(MultipartFile file) throws IOException {
+        String filePath=FOLDER_PATH+file.getOriginalFilename();
+
+        FileDataEntity fileData=fileDataRepository.save(FileDataEntity.builder()
+                .name(file.getOriginalFilename())
+                .type(file.getContentType())
+                .filePath(filePath).build());
+
+        file.transferTo(new File(filePath));
+
+        if (fileData != null) {
+            return "file uploaded successfully : " + filePath;
+        }
+        return null;
+    }
+    @Override
+    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
+        Optional<FileDataEntity> fileData = fileDataRepository.findByName(fileName);
+        String filePath=fileData.get().getFilePath();
+        byte[] images = Files.readAllBytes(new File(filePath).toPath());
+        return images;
+    }
+
 }

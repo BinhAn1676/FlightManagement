@@ -35,10 +35,13 @@ public class AdminController {
     private AirportService airportService;
     private FlightService flightService;
     private AircraftService aircraftService;
+    private ReservationService reservationService;
 
     @Autowired
     public AdminController(UserService userService, AdminService adminService,CountryService countryService,
-                           AirportService airportService,FlightService flightService,AircraftService aircraftService) {
+                           AirportService airportService,FlightService flightService,AircraftService aircraftService,
+                           ReservationService reservationService) {
+        this.reservationService=reservationService;
         this.aircraftService=aircraftService;
         this.userService = userService;
         this.adminService = adminService;
@@ -106,6 +109,12 @@ public class AdminController {
         } else {
             throw new Exception("No data");
         }
+    }
+
+    @GetMapping("/reservation")
+    public ResponseEntity<?> getAllReservations() {
+        List<ReservationDto> reservationDtos = reservationService.findAllReservations();
+        return ResponseEntity.ok(reservationDtos);
     }
 
 }
