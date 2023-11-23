@@ -1,9 +1,12 @@
 package com.binhan.flightmanagement.controllers;
 
 import com.binhan.flightmanagement.dto.CountryDto;
+import com.binhan.flightmanagement.dto.UserDto;
+import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.service.CountryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +65,21 @@ public class CountryController {
     public ResponseEntity<?> uploadCountriesData(@RequestParam("file")MultipartFile file){
         //countryService.saveCountriesByExcel(file);
         return ResponseEntity.ok(Map.of("Message","Countries data uploaded successfully"));
+    }
+
+    @GetMapping("/filter")
+    private ResponseEntity<?> getCountriesWithSort(@RequestParam(value = "field",required = false) String field) {
+        List<CountryDto> countryDtos = countryService.findCountriesWithSorting(field);
+        return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(countryDtos.size(), countryDtos));
+    }
+
+
+    @GetMapping("/paginationAndSort")
+    private ResponseEntity<?> getCountriesWithPaginationAndSort(@RequestParam("offset") int offset,
+                                                            @RequestParam("pageSize") int pageSize,
+                                                            @RequestParam(value = "field",required = false) String field) {
+        Page<CountryDto> countryDtos = countryService.findCountriesWithPaginationAndSorting(offset, pageSize, field);
+        return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(countryDtos.getSize(), countryDtos));
     }
 
 }

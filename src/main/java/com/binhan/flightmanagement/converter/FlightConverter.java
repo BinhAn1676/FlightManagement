@@ -132,7 +132,7 @@ public class FlightConverter {
         return flightEntity;
     }
 
-    public FlightDto convertDto(FlightEntity flightEntity){
+    public FlightDto convertToDto(FlightEntity flightEntity){
         FlightDto flightDto = new FlightDto();
         flightDto.setSeats(flightEntity.getSeats());
         flightDto.setId(flightEntity.getId());

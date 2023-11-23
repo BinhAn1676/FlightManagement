@@ -2,19 +2,25 @@ package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.CountryConverter;
 import com.binhan.flightmanagement.dto.CountryDto;
+import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.exception.CountryExistedException;
 import com.binhan.flightmanagement.exception.CountryNotFoundException;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
+import com.binhan.flightmanagement.models.UserEntity;
 import com.binhan.flightmanagement.repository.AirportRepository;
 import com.binhan.flightmanagement.repository.CountryRepository;
 import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.repository.ReservationRepository;
 import com.binhan.flightmanagement.service.CountryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -112,20 +118,29 @@ public class CountryServiceImpl implements CountryService {
         return country;
     }
 
-    /*@Override
-    public void saveCountriesByExcel(MultipartFile file) {
-        if(excelUpload.isValidExcelFile(file)){
-            try {
-                List<CountryEntity> countryEntities=excelUpload.getCountriesDataFromExcel(file.getInputStream());
-                for(var country:countryEntities){
-                    if(countryRepository.findByCountryName(country.getCountryName())==null){
-                        countryRepository.save(country);
-                    }
-                }
-            } catch (IOException e) {
-                throw new IllegalArgumentException("The file is not a valid excel file");
-            }
+    @Override
+    public List<CountryDto> findCountriesWithSorting(String field) {
+        List<CountryEntity> countryEntities;
+        if(field == null){
+            countryEntities = countryRepository.findAll();
+        }else{
+            countryEntities = countryRepository.findAll(Sort.by(Sort.Direction.ASC,field));
         }
-    }*/
+        List<CountryDto> countryDtos = countryEntities.stream()
+                .map(item->countryConverter.convertToDto(item))
+                .collect(Collectors.toList());
+        return countryDtos;
+    }
+
+    @Override
+    public Page<CountryDto> findCountriesWithPaginationAndSorting(int offset, int pageSize, String field) {
+        Page<CountryEntity> countryEntities;
+        if (field == null) {
+            countryEntities = countryRepository.findAll(PageRequest.of(offset, pageSize));
+        } else {
+            countryEntities = countryRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
+        }
+        return countryEntities.map(item->countryConverter.convertToDto(item));
+    }
 
 }

@@ -41,6 +41,8 @@ public class AdminServiceImpl implements AdminService {
     private AirportService airportService;
     private FlightService flightService;
     private AircraftService aircraftService;
+    private ReservationRepository reservationRepository;
+    private ReservationConverter reservationConverter;
 
     @Autowired
     public AdminServiceImpl(UserRepository userRepository, UserConverter userConverter,
@@ -49,7 +51,10 @@ public class AdminServiceImpl implements AdminService {
                             AirportConverter airportConverter, FlightConverter flightConverter,
                             AircraftConverter aircraftConverter, AircraftRepository aircraftRepository,
                             CountryService countryService, AirportService airportService,
-                            FlightService flightService, AircraftService aircraftService){
+                            FlightService flightService, AircraftService aircraftService,
+                            ReservationRepository reservationRepository,ReservationConverter reservationConverter){
+        this.reservationConverter=reservationConverter;
+        this.reservationRepository=reservationRepository;
         this.flightService=flightService;
         this.aircraftService=aircraftService;
         this.airportService=airportService;
@@ -160,6 +165,30 @@ public class AdminServiceImpl implements AdminService {
         return baseResponse;
     }
 
+    @Override
+    public Page<ReservationDto> findReservationsWithPaginationAndSorting(int offset, int pageSize, String field) {
+        Page<ReservationEntity> reservationEntities;
+        if (field == null) {
+            reservationEntities = reservationRepository.findAll(PageRequest.of(offset, pageSize));
+        } else {
+            reservationEntities = reservationRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
+        }
+        return reservationEntities.map(item->reservationConverter.convertToDto(item));
+    }
+
+    @Override
+    public List<ReservationDto> findReservationsWithSorting(String field) {
+        List<ReservationEntity> reservationEntities;
+        if(field == null){
+            reservationEntities = reservationRepository.findAll();
+        }else{
+            reservationEntities = reservationRepository.findAll(Sort.by(Sort.Direction.ASC,field));
+        }
+        List<ReservationDto> reservationDtos = reservationEntities.stream()
+                .map(item->reservationConverter.convertToDto(item))
+                .collect(Collectors.toList());
+        return reservationDtos;
+    }
 
 
     private UserDto mapToUserDto(UserEntity user) {

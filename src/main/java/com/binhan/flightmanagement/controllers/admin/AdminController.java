@@ -66,14 +66,14 @@ public class AdminController {
         }
     }
 
-    @GetMapping()
+    @GetMapping("/user/filter")
     private ResponseEntity<?> getUsersWithSort(@RequestParam(value = "field",required = false) String field) {
         List<UserDto> userDtos = adminService.findUsersWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(userDtos.size(), userDtos));
     }
 
 
-    @GetMapping("/paginationAndSort")
+    @GetMapping("/user/paginationAndSort")
     private ResponseEntity<?> getUsersWithPaginationAndSort(@RequestParam("offset") int offset,
                                                             @RequestParam("pageSize") int pageSize,
                                                             @RequestParam(value = "field",required = false) String field) {
@@ -115,6 +115,21 @@ public class AdminController {
     public ResponseEntity<?> getAllReservations() {
         List<ReservationDto> reservationDtos = reservationService.findAllReservations();
         return ResponseEntity.ok(reservationDtos);
+    }
+
+    @GetMapping("/reservation/filter")
+    private ResponseEntity<?> getReservationsWithSort(@RequestParam(value = "field",required = false) String field) {
+        List<ReservationDto> reservationDtos = adminService.findReservationsWithSorting(field);
+        return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(reservationDtos.size(), reservationDtos));
+    }
+
+
+    @GetMapping("/reservation/paginationAndSort")
+    private ResponseEntity<?> getReservationsWithPaginationAndSort(@RequestParam("offset") int offset,
+                                                            @RequestParam("pageSize") int pageSize,
+                                                            @RequestParam(value = "field",required = false) String field) {
+        Page<ReservationDto> reservationDtos = adminService.findReservationsWithPaginationAndSorting(offset, pageSize, field);
+        return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(reservationDtos.getSize(), reservationDtos));
     }
 
 }

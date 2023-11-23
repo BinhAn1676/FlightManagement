@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.AirportConverter;
 import com.binhan.flightmanagement.dto.AirportDto;
+import com.binhan.flightmanagement.dto.CountryDto;
 import com.binhan.flightmanagement.exception.AirportExistedException;
 import com.binhan.flightmanagement.exception.AirportNotFoundException;
 import com.binhan.flightmanagement.models.AirportEntity;
@@ -14,6 +15,9 @@ import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.repository.ReservationRepository;
 import com.binhan.flightmanagement.service.AirportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -135,6 +139,31 @@ public class AirportServiceImpl implements AirportService {
             throw new AirportNotFoundException("cant find airport");
         }
         return airport;
+    }
+
+    @Override
+    public Page<AirportDto> findAirportsWithPaginationAndSorting(int offset, int pageSize, String field) {
+        Page<AirportEntity> airportEntities;
+        if (field == null) {
+            airportEntities = airportRepository.findAll(PageRequest.of(offset, pageSize));
+        } else {
+            airportEntities = airportRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
+        }
+        return airportEntities.map(item->airportConverter.convertToDto(item));
+    }
+
+    @Override
+    public List<AirportDto> findAirportsWithSorting(String field) {
+        List<AirportEntity> airportEntities;
+        if(field == null){
+            airportEntities = airportRepository.findAll();
+        }else{
+            airportEntities = airportRepository.findAll(Sort.by(Sort.Direction.ASC,field));
+        }
+        List<AirportDto> airportDtos = airportEntities.stream()
+                .map(item->airportConverter.convertToDto(item))
+                .collect(Collectors.toList());
+        return airportDtos;
     }
 
 }

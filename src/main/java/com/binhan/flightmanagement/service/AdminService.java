@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.service;
 
+import com.binhan.flightmanagement.dto.ReservationDto;
 import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.response.BaseResponse;
 import org.springframework.data.domain.Page;
@@ -18,4 +19,8 @@ public interface AdminService {
     Page<UserDto> findUsersWithPaginationAndSorting(int offset, int pageSize, String field);
 
     BaseResponse importData(MultipartFile importFile);
+
+    Page<ReservationDto> findReservationsWithPaginationAndSorting(int offset, int pageSize, String field);
+
+    List<ReservationDto> findReservationsWithSorting(String field);
 }

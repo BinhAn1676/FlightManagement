@@ -1,6 +1,7 @@
 package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.FlightConverter;
+import com.binhan.flightmanagement.dto.CountryDto;
 import com.binhan.flightmanagement.dto.FlightDto;
 import com.binhan.flightmanagement.exception.FlightNotFoundException;
 import com.binhan.flightmanagement.models.CountryEntity;
@@ -9,6 +10,9 @@ import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.repository.ReservationRepository;
 import com.binhan.flightmanagement.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +53,7 @@ public class FlightServiceImpl implements FlightService {
         List<FlightEntity> flightEntities = flightRepository.findAll();
         List<FlightDto> flightDtos = flightEntities
                 .stream()
-                .map(item ->flightConverter.convertDto(item))
+                .map(item ->flightConverter.convertToDto(item))
                 .collect(Collectors.toList());
         return flightDtos;
     }
@@ -94,5 +98,30 @@ public class FlightServiceImpl implements FlightService {
             throw new FlightNotFoundException("cant find flight");
         }
         return flightEntity;
+    }
+
+    @Override
+    public List<FlightDto> findCountriesWithSorting(String field) {
+        List<FlightEntity> flightEntities;
+        if(field == null){
+            flightEntities = flightRepository.findAll();
+        }else{
+            flightEntities = flightRepository.findAll(Sort.by(Sort.Direction.ASC,field));
+        }
+        List<FlightDto> flightDtos = flightEntities.stream()
+                .map(item->flightConverter.convertToDto(item))
+                .collect(Collectors.toList());
+        return flightDtos;
+    }
+
+    @Override
+    public Page<FlightDto> findCountriesWithPaginationAndSorting(int offset, int pageSize, String field) {
+        Page<FlightEntity> flightEntities;
+        if (field == null) {
+            flightEntities = flightRepository.findAll(PageRequest.of(offset, pageSize));
+        } else {
+            flightEntities = flightRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
+        }
+        return flightEntities.map(item->flightConverter.convertToDto(item));
     }
 }

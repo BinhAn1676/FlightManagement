@@ -1,9 +1,12 @@
 package com.binhan.flightmanagement.controllers;
 
 import com.binhan.flightmanagement.dto.AirportDto;
+import com.binhan.flightmanagement.dto.CountryDto;
+import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.models.AirportEntity;
 import com.binhan.flightmanagement.service.AirportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +76,21 @@ public class AirportController {
                 .contentType(MediaType.valueOf("image/png"))
                 .body(imageData);
 
+    }
+
+    @GetMapping("/filter")
+    private ResponseEntity<?> getAirportsWithSort(@RequestParam(value = "field",required = false) String field) {
+        List<AirportDto> airportDtos = airportService.findAirportsWithSorting(field);
+        return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(airportDtos.size(), airportDtos));
+    }
+
+
+    @GetMapping("/paginationAndSort")
+    private ResponseEntity<?> getAirportsWithPaginationAndSort(@RequestParam("offset") int offset,
+                                                                @RequestParam("pageSize") int pageSize,
+                                                                @RequestParam(value = "field",required = false) String field) {
+        Page<AirportDto> airportDtos = airportService.findAirportsWithPaginationAndSorting(offset, pageSize, field);
+        return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(airportDtos.getSize(), airportDtos));
     }
 
 }
