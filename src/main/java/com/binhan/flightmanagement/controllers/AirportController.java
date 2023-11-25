@@ -78,7 +78,7 @@ public class AirportController {
 
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/sortField")
     private ResponseEntity<?> getAirportsWithSort(@RequestParam(value = "field",required = false) String field) {
         List<AirportDto> airportDtos = airportService.findAirportsWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(airportDtos.size(), airportDtos));

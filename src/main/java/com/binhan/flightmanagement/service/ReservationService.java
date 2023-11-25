@@ -11,4 +11,6 @@ public interface ReservationService {
     Boolean save(ReservationRequestDto reservationDto);
 
     List<ReservationDto> findAllReservations();
+
+    void delete(Long id);
 }

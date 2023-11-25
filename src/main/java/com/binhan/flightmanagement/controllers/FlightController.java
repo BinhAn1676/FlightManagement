@@ -1,6 +1,7 @@
 package com.binhan.flightmanagement.controllers;
 
 import com.binhan.flightmanagement.dto.CountryDto;
+import com.binhan.flightmanagement.dto.FilterFlightDto;
 import com.binhan.flightmanagement.dto.FlightDto;
 import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.models.FlightEntity;
@@ -50,7 +51,7 @@ public class FlightController {
         flightService.delete(id);
         return ResponseEntity.ok("Deleted successfully");
     }
-    @GetMapping("/filter")
+    @GetMapping("/sortField")
     private ResponseEntity<?> getFlightsWithSort(@RequestParam(value = "field",required = false) String field) {
         List<FlightDto> flightDtos = flightService.findCountriesWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(flightDtos.size(), flightDtos));
@@ -63,5 +64,11 @@ public class FlightController {
                                                                 @RequestParam(value = "field",required = false) String field) {
         Page<FlightDto> flightDtos = flightService.findCountriesWithPaginationAndSorting(offset, pageSize, field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(flightDtos.getSize(), flightDtos));
+    }
+
+    @GetMapping("filter")
+    public ResponseEntity<?> findFlightsWithFilter(@RequestBody FilterFlightDto filterFlightDto){
+        List<FlightDto> flightDtos = flightService.findFlightFilter(filterFlightDto);
+        return ResponseEntity.ok(flightDtos);
     }
 }

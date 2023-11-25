@@ -2,8 +2,11 @@ package com.binhan.flightmanagement.service.impl;
 
 import com.binhan.flightmanagement.converter.FlightConverter;
 import com.binhan.flightmanagement.dto.CountryDto;
+import com.binhan.flightmanagement.dto.FilterFlightDto;
 import com.binhan.flightmanagement.dto.FlightDto;
 import com.binhan.flightmanagement.exception.FlightNotFoundException;
+import com.binhan.flightmanagement.exception.WrongDateFormatException;
+import com.binhan.flightmanagement.exception.WrongDateLogicException;
 import com.binhan.flightmanagement.models.CountryEntity;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.repository.FlightRepository;
@@ -16,8 +19,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Service
@@ -123,5 +130,28 @@ public class FlightServiceImpl implements FlightService {
             flightEntities = flightRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
         }
         return flightEntities.map(item->flightConverter.convertToDto(item));
+    }
+
+    @Override
+    public List<FlightDto> findFlightFilter(FilterFlightDto filterFlightDto) {
+        if(filterFlightDto.getDepartureTime()!=null){
+            filterFlightDto.setDepartureTime(filterFlightDto.getDepartureTime().replace("/","-"));
+        }else if(filterFlightDto.getArrivalTime()!=null){
+            filterFlightDto.setArrivalTime(filterFlightDto.getArrivalTime().replace("/","-"));
+        }
+        List<FlightEntity> flightEntities = flightRepository.filterFlights(filterFlightDto);
+        List<FlightDto> flightDtos = flightEntities.stream()
+                .map(flightConverter::convertToDto)
+                .collect(Collectors.toList());
+        return flightDtos;
+    }
+    private Date parseDate(String dateString) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            //formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+            return dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid date format", e);
+        }
     }
 }

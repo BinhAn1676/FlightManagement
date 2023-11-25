@@ -4,6 +4,7 @@ import com.binhan.flightmanagement.converter.ReservationConverter;
 import com.binhan.flightmanagement.dto.ReservationDto;
 import com.binhan.flightmanagement.dto.request.ReservationRequestDto;
 import com.binhan.flightmanagement.exception.FlightNotFoundException;
+import com.binhan.flightmanagement.exception.ReservationNotFoundException;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.models.ReservationEntity;
 import com.binhan.flightmanagement.repository.FlightRepository;
@@ -85,4 +86,14 @@ public class ReservationServiceImpl implements ReservationService {
                 .collect(Collectors.toList());
         return reservationDtos;
     }
+
+    @Override
+    public void delete(Long id) {
+        ReservationEntity reservationEntity = reservationRepository.findById(id).get();
+        if(reservationEntity==null){
+            throw new ReservationNotFoundException("cant find reservation");
+        }
+        reservationRepository.delete(reservationEntity);
+    }
+
 }

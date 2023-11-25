@@ -67,7 +67,7 @@ public class CountryController {
         return ResponseEntity.ok(Map.of("Message","Countries data uploaded successfully"));
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/sortField")
     private ResponseEntity<?> getCountriesWithSort(@RequestParam(value = "field",required = false) String field) {
         List<CountryDto> countryDtos = countryService.findCountriesWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(countryDtos.size(), countryDtos));

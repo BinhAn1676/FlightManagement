@@ -58,7 +58,7 @@ public class AircraftController {
         return ResponseEntity.ok("Deleted successfully");
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/sortField")
     private ResponseEntity<?> getAirportsWithSort(@RequestParam(value = "field",required = false) String field) {
         List<AircraftDto> aircraftDtos = aircraftService.findAircraftsWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(aircraftDtos.size(), aircraftDtos));

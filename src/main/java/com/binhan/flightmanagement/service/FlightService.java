@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.service;
 
+import com.binhan.flightmanagement.dto.FilterFlightDto;
 import com.binhan.flightmanagement.dto.FlightDto;
 import com.binhan.flightmanagement.models.FlightEntity;
 import org.springframework.data.domain.Page;
@@ -22,4 +23,6 @@ public interface FlightService {
     List<FlightDto> findCountriesWithSorting(String field);
 
     Page<FlightDto> findCountriesWithPaginationAndSorting(int offset, int pageSize, String field);
+
+    List<FlightDto> findFlightFilter(FilterFlightDto filterFlightDto);
 }
