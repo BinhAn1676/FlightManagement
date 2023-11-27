@@ -43,7 +43,7 @@ public class ReservationConverter {
                     .user(userRepository.findByUserName(reservationDto.getUsername()).get())
                     .seatNumber(seatNumber)
                     .flight(flightRepository.findById(reservationDto.getFlightId()).get())
-                    .bookingStatus(reservationDto.getBookingStatus())
+                    .bookingStatus("Not paid")
                     .reservationTime(new Date())
                     .build();
         }else{
@@ -52,7 +52,7 @@ public class ReservationConverter {
                     .user(userRepository.findByUserName(reservationDto.getUsername()).get())
                     .seatNumber(seatNumber)
                     .flight(flightRepository.findById(reservationDto.getFlightId()).get())
-                    .bookingStatus(reservationDto.getBookingStatus())
+                    .bookingStatus("Not paid")
                     .reservationTime(new Date())
                     .build();
         }

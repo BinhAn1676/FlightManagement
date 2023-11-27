@@ -32,6 +32,7 @@ public class JWTGenerator {
         return token;
     }
     public String getUsernameFromJWT(String token){
+        token = token.replace("Bearer ", "");
         Claims claims = Jwts.parser()
                 .setSigningKey(key)
                 .parseClaimsJws(token)

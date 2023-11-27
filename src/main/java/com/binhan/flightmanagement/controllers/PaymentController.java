@@ -2,7 +2,10 @@ package com.binhan.flightmanagement.controllers;
 
 import com.binhan.flightmanagement.dto.PaymentDto;
 import com.binhan.flightmanagement.dto.TransactionStatusDto;
+import com.binhan.flightmanagement.service.PaymentService;
 import com.binhan.flightmanagement.util.PaymentConfig;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,18 +23,20 @@ import java.util.*;
 @RequestMapping("/payment")
 public class PaymentController {
 
-    @GetMapping()
-    public ResponseEntity<?> createPayment(@RequestParam("price") Long price) throws UnsupportedEncodingException {
+    private PaymentService paymentService;
 
-//        String vnp_Version = "2.1.0";
-//        String vnp_Command = "pay";
-//        String orderType = "other";
-//        long amount = Integer.parseInt(req.getParameter("amount"))*100;
-//        String bankCode = req.getParameter("bankCode");
+    @Autowired
+    public PaymentController(PaymentService paymentService){
+        this.paymentService=paymentService;
+    }
+
+    @GetMapping()
+    public ResponseEntity<?> createPayment(@RequestParam("price") Long price,
+                                           @RequestParam("reservationId")Long id) throws UnsupportedEncodingException {
+
         String vnp_IpAddr = "127.0.0.1";
         Long amount = price *100;
         String vnp_TxnRef = PaymentConfig.getRandomNumber(8);
-        //String vnp_IpAddr = PaymentConfig.getIpAddress(req);
 
         String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
 
@@ -42,12 +47,14 @@ public class PaymentController {
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_BankCode", "NCB");
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        //vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        vnp_Params.put("vnp_TxnRef", String.valueOf(id));//id reservation
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_OrderType", PaymentConfig.orderType);
         vnp_Params.put("vnp_ReturnUrl",PaymentConfig.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+        //vnp_Params.put("vnp_reservationId", String.valueOf(id));
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -96,18 +103,22 @@ public class PaymentController {
     @GetMapping("/info")
     public ResponseEntity<?> transaction(@RequestParam("vnp_Amount") String amount,
                                          @RequestParam("vnp_BankCode") String bankCode,
-                                         @RequestParam("vnp_OrderInfo") String order,
-                                         @RequestParam("vnp_ResponseCode") String responseCode){
+                                         @RequestParam("vnp_ResponseCode") String responseCode,
+                                         @RequestParam("vnp_TxnRef") Long reservationId){
         TransactionStatusDto transactionStatusDto = new TransactionStatusDto();
+        if(!responseCode.equals("00")){
+            transactionStatusDto.setStatus("NO");
+            transactionStatusDto.setMessage("Failed");
+            transactionStatusDto.setData("");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(transactionStatusDto);
+        }
+        paymentService.savePayment(amount,bankCode,reservationId);
+
+
         if(responseCode.equals("00")){
             transactionStatusDto.setStatus("OK");
             transactionStatusDto.setMessage("Successfully");
             transactionStatusDto.setData("");
-        }else{
-            transactionStatusDto.setStatus("NO");
-            transactionStatusDto.setMessage("Failed");
-            transactionStatusDto.setData("");
-
         }
         return ResponseEntity.status(HttpStatus.OK).body(transactionStatusDto);
     }

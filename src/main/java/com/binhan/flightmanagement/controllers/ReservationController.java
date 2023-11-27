@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.controllers;
 
 import com.binhan.flightmanagement.dto.ReservationDto;
 import com.binhan.flightmanagement.dto.request.ReservationRequestDto;
+import com.binhan.flightmanagement.security.JWTGenerator;
 import com.binhan.flightmanagement.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import java.util.List;
 @RequestMapping("/reservation")
 public class ReservationController {
     private ReservationService reservationService;
+    private JWTGenerator jwtGenerator;
 
     @Autowired
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService,JWTGenerator jwtGenerator) {
         this.reservationService = reservationService;
+        this.jwtGenerator=jwtGenerator;
     }
 
     @GetMapping()
@@ -27,7 +30,10 @@ public class ReservationController {
 
 
     @PostMapping
-    public ResponseEntity<?> makeReservation(@RequestBody ReservationRequestDto reservationDto) {
+    public ResponseEntity<?> makeReservation(@RequestHeader("Authorization") String token,
+                                             @RequestBody ReservationRequestDto reservationDto) {
+        String username = jwtGenerator.getUsernameFromJWT(token);
+        reservationDto.setUsername(username);
         Boolean check = reservationService.save(reservationDto);
         if(check){
             return ResponseEntity.ok("save successfully");
