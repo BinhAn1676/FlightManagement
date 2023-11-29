@@ -1,5 +1,6 @@
 package com.binhan.flightmanagement.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ public class PaymentEntity {
 
     @OneToOne
     @JoinColumn(name = "reservation_id")
+    @JsonIgnoreProperties("payments")
     private ReservationEntity reservation;
 
     @Temporal(TemporalType.TIMESTAMP)

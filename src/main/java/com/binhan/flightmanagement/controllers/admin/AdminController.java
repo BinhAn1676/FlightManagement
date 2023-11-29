@@ -4,6 +4,7 @@ import com.binhan.flightmanagement.dto.*;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.dto.response.BaseResponse;
+import com.binhan.flightmanagement.models.PaymentEntity;
 import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.service.*;
 import com.binhan.flightmanagement.util.ExcelUtils;
@@ -36,12 +37,14 @@ public class AdminController {
     private FlightService flightService;
     private AircraftService aircraftService;
     private ReservationService reservationService;
+    private PaymentService paymentService;
 
     @Autowired
     public AdminController(UserService userService, AdminService adminService,CountryService countryService,
                            AirportService airportService,FlightService flightService,AircraftService aircraftService,
-                           ReservationService reservationService) {
+                           ReservationService reservationService,PaymentService paymentService) {
         this.reservationService=reservationService;
+        this.paymentService=paymentService;
         this.aircraftService=aircraftService;
         this.userService = userService;
         this.adminService = adminService;
@@ -132,4 +135,24 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(reservationDtos.getSize(), reservationDtos));
     }
 
+    @GetMapping("/payment")
+    public ResponseEntity<?> getAllPayments() {
+        List<PaymentEntity> paymentEntities = paymentService.findAllPayments();
+        return ResponseEntity.ok(paymentEntities);
+    }
+
+    @GetMapping("/payment/filter")
+    private ResponseEntity<?> getPaymentsWithSort(@RequestParam(value = "field",required = false) String field) {
+        List<PaymentEntity> paymentEntities = paymentService.findPaymentsWithSorting(field);
+        return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(paymentEntities.size(), paymentEntities));
+    }
+
+
+    @GetMapping("/payment/paginationAndSort")
+    private ResponseEntity<?> getPaymentsWithPaginationAndSort(@RequestParam("offset") int offset,
+                                                                   @RequestParam("pageSize") int pageSize,
+                                                                   @RequestParam(value = "field",required = false) String field) {
+        Page<PaymentEntity> paymentEntities = paymentService.findPaymentsWithPaginationAndSorting(offset, pageSize, field);
+        return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(paymentEntities.getSize(), paymentEntities));
+    }
 }
