@@ -6,6 +6,7 @@ import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
 import com.binhan.flightmanagement.dto.request.NewPassword;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
+import com.binhan.flightmanagement.dto.request.RegisterRequest;
 import com.binhan.flightmanagement.exception.RoleNotFoundException;
 import com.binhan.flightmanagement.exception.UserNotFoundException;
 import com.binhan.flightmanagement.exception.WrongOldPasswordException;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
         this.userConverter = userConverter;
     }
 
-    @Override
+    /*@Override
     public UserDto saveUser(RegisterDto userRequest) {
         if (userRepository.existsByUserName(userRequest.getUsername())) {//check user is already existed
             return null;
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.save(user);
         UserDto userDto = userConverter.convertToDto(userEntity);
         return userDto;
-    }
+    }*/
 
 
     @Override
@@ -146,12 +147,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String saveNewUser(RegisterDto newUser) {
+    public String saveNewUser(RegisterRequest newUser) {
         if (userRepository.existsByUserName(newUser.getUsername())) {//check user is already existed
             return null;
-        }
-        if(!newUser.getPassword().equals(newUser.getRepeatPassword())){//wrong repeat password
-            throw new WrongRepeatPasswordException("wrong repeat password");
         }
         UserEntity user = new UserEntity();
         user.setUserName(newUser.getUsername());

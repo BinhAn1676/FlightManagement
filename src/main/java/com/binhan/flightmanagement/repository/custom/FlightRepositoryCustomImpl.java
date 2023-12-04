@@ -3,10 +3,11 @@ package com.binhan.flightmanagement.repository.custom;
 import com.binhan.flightmanagement.dto.FilterFlightDto;
 import com.binhan.flightmanagement.models.FlightEntity;
 import com.binhan.flightmanagement.util.StringUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+
 import java.lang.reflect.Field;
 import java.util.List;
 

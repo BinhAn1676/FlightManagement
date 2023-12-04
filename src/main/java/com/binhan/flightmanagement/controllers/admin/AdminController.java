@@ -2,6 +2,7 @@ package com.binhan.flightmanagement.controllers.admin;
 
 import com.binhan.flightmanagement.dto.*;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
+import com.binhan.flightmanagement.dto.request.RegisterRequest;
 import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.dto.response.BaseResponse;
 import com.binhan.flightmanagement.models.PaymentEntity;
@@ -26,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/v1/admin")
 public class AdminController {
     private UserService userService;
 
@@ -60,7 +61,7 @@ public class AdminController {
      * @return
      */
     @PostMapping("/newUser")
-    public ResponseEntity<?> addNewUser(@RequestBody RegisterDto newUser) {
+    public ResponseEntity<?> addNewUser(@RequestBody RegisterRequest newUser) {
         String msg = userService.saveNewUser(newUser);
         if (msg == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Tài khoản đã tồn tại");
@@ -68,6 +69,8 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.CREATED).body(msg);
         }
     }
+
+
 
     @GetMapping("/user/filter")
     private ResponseEntity<?> getUsersWithSort(@RequestParam(value = "field",required = false) String field) {

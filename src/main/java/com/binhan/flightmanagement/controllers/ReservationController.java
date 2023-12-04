@@ -2,7 +2,8 @@ package com.binhan.flightmanagement.controllers;
 
 import com.binhan.flightmanagement.dto.ReservationDto;
 import com.binhan.flightmanagement.dto.request.ReservationRequestDto;
-import com.binhan.flightmanagement.security.JWTGenerator;
+
+import com.binhan.flightmanagement.security.JwtService;
 import com.binhan.flightmanagement.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,15 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservation")
+@RequestMapping("/api/v1/reservation")
 public class ReservationController {
     private ReservationService reservationService;
-    private JWTGenerator jwtGenerator;
+    private JwtService jwtService;
 
     @Autowired
-    public ReservationController(ReservationService reservationService,JWTGenerator jwtGenerator) {
+    public ReservationController(ReservationService reservationService,JwtService jwtService) {
         this.reservationService = reservationService;
-        this.jwtGenerator=jwtGenerator;
+        this.jwtService=jwtService;
     }
 
     @GetMapping()
@@ -32,7 +33,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<?> makeReservation(@RequestHeader("Authorization") String token,
                                              @RequestBody ReservationRequestDto reservationDto) {
-        String username = jwtGenerator.getUsernameFromJWT(token);
+        String username = jwtService.extractUsername(token);
         reservationDto.setUsername(username);
         Boolean check = reservationService.save(reservationDto);
         if(check){

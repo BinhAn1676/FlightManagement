@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/country")
+@RequestMapping("/api/v1/country")
 public class CountryController {
     private CountryService countryService;
 

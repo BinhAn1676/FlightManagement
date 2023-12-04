@@ -3,10 +3,9 @@ package com.binhan.flightmanagement.controllers.auth;
 import com.binhan.flightmanagement.dto.AuthResponseDto;
 import com.binhan.flightmanagement.dto.EmailMessage;
 import com.binhan.flightmanagement.dto.UserDto;
-import com.binhan.flightmanagement.dto.request.LoginDto;
-import com.binhan.flightmanagement.dto.request.NewPassword;
-import com.binhan.flightmanagement.dto.request.RegisterDto;
-import com.binhan.flightmanagement.security.JWTGenerator;
+import com.binhan.flightmanagement.dto.request.*;
+import com.binhan.flightmanagement.dto.response.AuthenticationResponse;
+import com.binhan.flightmanagement.service.AuthenticationService;
 import com.binhan.flightmanagement.service.EmailSenderService;
 import com.binhan.flightmanagement.service.UserService;
 import lombok.Getter;
@@ -19,45 +18,37 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
+
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private AuthenticationManager authenticationManager;
     private UserService userService;
-    private JWTGenerator jwtGenerator;
     private EmailSenderService emailSenderService;
+    private AuthenticationService authenticationService;
     @Autowired
     public AuthController(AuthenticationManager authenticationManager,UserService userService,
-                          JWTGenerator jwtGenerator,EmailSenderService emailSenderService){
+                          EmailSenderService emailSenderService,
+                          AuthenticationService authenticationService){
         this.authenticationManager = authenticationManager;
+        this.authenticationService=authenticationService;
         this.userService = userService;
-        this.jwtGenerator = jwtGenerator;
         this.emailSenderService = emailSenderService;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<String> Register(@RequestBody @Valid RegisterDto userRequest){
-        UserDto userDto = userService.saveUser(userRequest);
-        if (userDto == null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tài khoản đã tồn tại");
-        } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Tạo tài khoản thành công");
-        }
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestBody RegisterRequest request
+    ) {
+        return ResponseEntity.ok(authenticationService.register(request));
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtGenerator.generateToken(authentication);
-        return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @RequestBody AuthenticationRequest request
+    ) {
+        return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
     @GetMapping()

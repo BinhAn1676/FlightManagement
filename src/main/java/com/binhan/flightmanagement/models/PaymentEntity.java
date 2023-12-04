@@ -1,9 +1,10 @@
 package com.binhan.flightmanagement.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
+
 import java.util.Date;
 
 @Getter

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/airport")
+@RequestMapping("/api/v1/airport")
 public class AirportController {
     private AirportService airportService;
 

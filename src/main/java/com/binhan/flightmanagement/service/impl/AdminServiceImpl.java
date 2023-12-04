@@ -104,7 +104,7 @@ public class AdminServiceImpl implements AdminService {
         Page<UserDto> userDtos = userEntities.map(user -> {
             UserDto userDto = new UserDto();
             userDto.setId(user.getId());
-            userDto.setUserName(user.getUserName());
+            userDto.setUserName(user.getUsername());
             userDto.setEmail(user.getEmail());
             userDto.setFullName(user.getFullName());
             userDto.setPhone(user.getPhone());
@@ -194,7 +194,7 @@ public class AdminServiceImpl implements AdminService {
     private UserDto mapToUserDto(UserEntity user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
-        userDto.setUserName(user.getUserName());
+        userDto.setUserName(user.getUsername());
         userDto.setEmail(user.getEmail());
         userDto.setFullName(user.getFullName());
         userDto.setPhone(user.getPhone());

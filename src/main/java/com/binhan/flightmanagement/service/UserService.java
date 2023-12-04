@@ -5,13 +5,14 @@ import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
 import com.binhan.flightmanagement.dto.request.NewPassword;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
+import com.binhan.flightmanagement.dto.request.RegisterRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
-    UserDto saveUser(RegisterDto userRequest);
+    //UserDto saveUser(RegisterDto userRequest);
 
     String update(UserDto userDto) ;
 
@@ -23,7 +24,7 @@ public interface UserService {
 
     String changePassword(ChangePasswordDto changePasswordDto);
 
-    String saveNewUser(RegisterDto newUser);
+    String saveNewUser(RegisterRequest newUser);
 
     String addRoletoUser(Long userId, RoleDto roleDto);
 

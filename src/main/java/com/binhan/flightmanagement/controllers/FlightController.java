@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/flight")
+@RequestMapping("/api/v1/flight")
 public class FlightController {
 
     private FlightService flightService;

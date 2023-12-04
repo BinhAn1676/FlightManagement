@@ -2,7 +2,6 @@ package com.binhan.flightmanagement.util;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -100,7 +99,7 @@ public class PaymentConfig {
         }
     }
 
-    public static String getIpAddress(HttpServletRequest request) {
+   /* public static String getIpAddress(HttpServletRequest request) {
         String ipAdress;
         try {
             ipAdress = request.getHeader("X-FORWARDED-FOR");
@@ -111,7 +110,7 @@ public class PaymentConfig {
             ipAdress = "Invalid IP:" + e.getMessage();
         }
         return ipAdress;
-    }
+    }*/
 
     public static String getRandomNumber(int len) {
         Random rnd = new Random();

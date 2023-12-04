@@ -1,10 +1,10 @@
 package com.binhan.flightmanagement.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.validator.constraints.UniqueElements;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

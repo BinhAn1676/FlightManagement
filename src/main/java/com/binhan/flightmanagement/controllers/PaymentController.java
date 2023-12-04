@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/api/v1/payment")
 public class PaymentController {
 
     private PaymentService paymentService;

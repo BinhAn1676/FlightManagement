@@ -1,6 +1,6 @@
 package com.binhan.flightmanagement.repository;
 
-import antlr.collections.List;
+
 import com.binhan.flightmanagement.models.ReservationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

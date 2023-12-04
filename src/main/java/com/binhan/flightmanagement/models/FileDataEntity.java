@@ -1,8 +1,7 @@
 package com.binhan.flightmanagement.models;
 
+import jakarta.persistence.*;
 import lombok.*;
-
-import javax.persistence.*;
 
 @Getter
 @Setter

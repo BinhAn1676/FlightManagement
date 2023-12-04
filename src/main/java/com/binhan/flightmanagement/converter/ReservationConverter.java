@@ -27,7 +27,7 @@ public class ReservationConverter {
                 .bookingStatus(reservationEntity.getBookingStatus())
                 .seatNumber(reservationEntity.getSeatNumber())
                 .id(reservationEntity.getId())
-                .username(reservationEntity.getUser().getUserName())
+                .username(reservationEntity.getUser().getUsername())
                 .flightId(reservationEntity.getFlight().getId())
                 .reservationTime(reservationEntity.getReservationTime())
                 .build();
