@@ -9,6 +9,7 @@ import com.binhan.flightmanagement.models.PaymentEntity;
 import com.binhan.flightmanagement.repository.FlightRepository;
 import com.binhan.flightmanagement.service.*;
 import com.binhan.flightmanagement.util.ExcelUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -60,6 +61,10 @@ public class AdminController {
      * @param newUser
      * @return
      */
+    @Operation(
+            description = "Create new user",
+            summary = "Create new user"
+    )
     @PostMapping("/newUser")
     public ResponseEntity<?> addNewUser(@RequestBody RegisterRequest newUser) {
         String msg = userService.saveNewUser(newUser);
@@ -71,14 +76,20 @@ public class AdminController {
     }
 
 
-
+    @Operation(
+            description = "Get users by field sort ASC ",
+            summary = "Find users with sorting"
+    )
     @GetMapping("/user/filter")
     private ResponseEntity<?> getUsersWithSort(@RequestParam(value = "field",required = false) String field) {
         List<UserDto> userDtos = adminService.findUsersWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(userDtos.size(), userDtos));
     }
 
-
+    @Operation(
+            description = "Get users by field sort ASC and pagination",
+            summary = "Find users with sorting and pagination"
+    )
     @GetMapping("/user/paginationAndSort")
     private ResponseEntity<?> getUsersWithPaginationAndSort(@RequestParam("offset") int offset,
                                                             @RequestParam("pageSize") int pageSize,
@@ -87,12 +98,19 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(usersPaging.getSize(), usersPaging));
     }
 
+    @Operation(
+            description = "Suggest using postman to send file",
+            summary = "Import data from excel "
+    )
     @PostMapping("import")
     public ResponseEntity<BaseResponse> importData(@RequestParam("file")MultipartFile importFile){
         BaseResponse baseResponse = adminService.importData(importFile);
         return ResponseEntity.ok(baseResponse);
     }
-
+    @Operation(
+            description = "Suggest using postman ",
+            summary = "Export data to excel "
+    )
     @GetMapping("/export")
     public ResponseEntity<Resource> exportData() throws Exception {
         List<CountryDto> countryDtos = countryService.findAllCountries();
@@ -117,19 +135,30 @@ public class AdminController {
         }
     }
 
+    @Operation(
+            description = "Get all reservations",
+            summary = "Get all customers 's reservations "
+    )
     @GetMapping("/reservation")
     public ResponseEntity<?> getAllReservations() {
         List<ReservationDto> reservationDtos = reservationService.findAllReservations();
         return ResponseEntity.ok(reservationDtos);
     }
 
+    @Operation(
+            description = "Get all reservations by field sort ASC ",
+            summary = "Find reservations with sorting"
+    )
     @GetMapping("/reservation/filter")
     private ResponseEntity<?> getReservationsWithSort(@RequestParam(value = "field",required = false) String field) {
         List<ReservationDto> reservationDtos = adminService.findReservationsWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(reservationDtos.size(), reservationDtos));
     }
 
-
+    @Operation(
+            description = "Get reservations by field sort ASC and pagination",
+            summary = "Find reservations with sorting and pagination"
+    )
     @GetMapping("/reservation/paginationAndSort")
     private ResponseEntity<?> getReservationsWithPaginationAndSort(@RequestParam("offset") int offset,
                                                             @RequestParam("pageSize") int pageSize,
@@ -143,14 +172,20 @@ public class AdminController {
         List<PaymentEntity> paymentEntities = paymentService.findAllPayments();
         return ResponseEntity.ok(paymentEntities);
     }
-
+    @Operation(
+            description = "Get all payments by field sort ASC ",
+            summary = "Find payments with sorting"
+    )
     @GetMapping("/payment/filter")
     private ResponseEntity<?> getPaymentsWithSort(@RequestParam(value = "field",required = false) String field) {
         List<PaymentEntity> paymentEntities = paymentService.findPaymentsWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(paymentEntities.size(), paymentEntities));
     }
 
-
+    @Operation(
+            description = "Get payments by field sort ASC and pagination",
+            summary = "Find payments with sorting and pagination"
+    )
     @GetMapping("/payment/paginationAndSort")
     private ResponseEntity<?> getPaymentsWithPaginationAndSort(@RequestParam("offset") int offset,
                                                                    @RequestParam("pageSize") int pageSize,

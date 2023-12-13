@@ -15,10 +15,10 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 contact = @Contact(
                         name = "BinhAn",
                         email = "nguyenbinhankma@gmail.com",
-                        url = "https://aliboucoding.com/course"
+                        url = "https://www.facebook.com/profile.php?id=100009584982013"
                 ),
-                description = "OpenApi documentation for Spring Security",
-                title = "OpenApi specification - Alibou",
+                description = "OpenApi documentation for Project Flight management",
+                title = "OpenApi specification - Flight Management",
                 version = "1.0",
                 license = @License(
                         name = "Licence name",
@@ -31,10 +31,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
                         description = "Local ENV",
                         url = "http://localhost:8080"
                 ),
-                @Server(
-                        description = "PROD ENV",
-                        url = "https://aliboucoding.com/course"
-                )
         },
         security = {
                 @SecurityRequirement(

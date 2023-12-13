@@ -61,11 +61,6 @@ public class CountryController {
         return ResponseEntity.ok("Deleted successfully");
     }
 
-    @PostMapping("/upload-country-data")
-    public ResponseEntity<?> uploadCountriesData(@RequestParam("file")MultipartFile file){
-        //countryService.saveCountriesByExcel(file);
-        return ResponseEntity.ok(Map.of("Message","Countries data uploaded successfully"));
-    }
 
     @GetMapping("/sortField")
     private ResponseEntity<?> getCountriesWithSort(@RequestParam(value = "field",required = false) String field) {

@@ -4,6 +4,7 @@ import com.binhan.flightmanagement.dto.PaymentDto;
 import com.binhan.flightmanagement.dto.TransactionStatusDto;
 import com.binhan.flightmanagement.service.PaymentService;
 import com.binhan.flightmanagement.util.PaymentConfig;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,10 @@ public class PaymentController {
     public PaymentController(PaymentService paymentService){
         this.paymentService=paymentService;
     }
-
+    @Operation(
+            description = "make a payment with price and reservationId",
+            summary = "Make a payment"
+    )
     @GetMapping()
     public ResponseEntity<?> createPayment(@RequestParam("price") Long price,
                                            @RequestParam("reservationId")Long id) throws UnsupportedEncodingException {
@@ -100,6 +104,10 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.OK).body(paymentDto);
     }
 
+    @Operation(
+            description = "Dont have to call it directly",
+            summary = "this API is auto-called when making a payment"
+    )
     @GetMapping("/info")
     public ResponseEntity<?> transaction(@RequestParam("vnp_Amount") String amount,
                                          @RequestParam("vnp_BankCode") String bankCode,

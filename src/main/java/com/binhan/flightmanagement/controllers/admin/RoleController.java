@@ -5,6 +5,7 @@ import com.binhan.flightmanagement.dto.UserDto;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.service.RoleService;
 import com.binhan.flightmanagement.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,10 @@ public class RoleController {
         this.userService = userService;
         this.roleService = roleService;
     }
-
+    @Operation(
+            description = "Add new Role with role name and role code (Khach Hang - CUSTOMER)",
+            summary = "Add new Role"
+    )
     @PostMapping()
     public ResponseEntity<String> addRole(@RequestBody RoleDto roleDto){
         RoleDto roleSave = roleService.saveRole(roleDto);
@@ -39,7 +43,10 @@ public class RoleController {
         List<RoleDto> roles = roleService.findAll();
         return new ResponseEntity<>(roles,HttpStatus.OK);
     }
-
+    @Operation(
+            description = "Add role to user with userId",
+            summary = "Add role to user"
+    )
     @PutMapping("/{id}")
     public ResponseEntity<?> addRoleToUser(@PathVariable("id") Long userId,
                                            @RequestBody RoleDto roleDto){

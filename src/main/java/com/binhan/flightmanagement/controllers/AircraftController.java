@@ -5,6 +5,7 @@ import com.binhan.flightmanagement.dto.AirportDto;
 import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.models.AircraftEntity;
 import com.binhan.flightmanagement.service.AircraftService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -57,16 +58,22 @@ public class AircraftController {
         aircraftService.delete(id);
         return ResponseEntity.ok("Deleted successfully");
     }
-
+    @Operation(
+            description = "Get all Aircrafts by field sort ASC ",
+            summary = "Find Aircrafts with sorting"
+    )
     @GetMapping("/sortField")
-    private ResponseEntity<?> getAirportsWithSort(@RequestParam(value = "field",required = false) String field) {
+    private ResponseEntity<?> getAircraftsWithSort(@RequestParam(value = "field",required = false) String field) {
         List<AircraftDto> aircraftDtos = aircraftService.findAircraftsWithSorting(field);
         return ResponseEntity.status(HttpStatus.OK).body(new APIResponse<>(aircraftDtos.size(), aircraftDtos));
     }
 
-
+    @Operation(
+            description = "Get Aircrafts by field sort ASC and pagination",
+            summary = "Find Aircrafts with sorting and pagination"
+    )
     @GetMapping("/paginationAndSort")
-    private ResponseEntity<?> getAirportsWithPaginationAndSort(@RequestParam("offset") int offset,
+    private ResponseEntity<?> getAircraftsWithPaginationAndSort(@RequestParam("offset") int offset,
                                                                @RequestParam("pageSize") int pageSize,
                                                                @RequestParam(value = "field",required = false) String field) {
         Page<AircraftDto> aircraftDtos = aircraftService.findAircraftsWithPaginationAndSorting(offset, pageSize, field);

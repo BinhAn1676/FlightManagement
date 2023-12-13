@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -42,9 +43,9 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authorities= new ArrayList<>();
-        for(RoleEntity role : this.getRoles()){
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for(RoleEntity role: this.getRoles()){
+            authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getCode()));
         }
         return authorities;
     }

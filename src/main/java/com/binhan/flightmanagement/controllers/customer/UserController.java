@@ -5,6 +5,7 @@ import com.binhan.flightmanagement.dto.request.ChangePasswordDto;
 import com.binhan.flightmanagement.dto.request.RegisterDto;
 import com.binhan.flightmanagement.dto.response.APIResponse;
 import com.binhan.flightmanagement.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +34,11 @@ public class UserController {
      * @return
      * @throws IOException
      */
-    @PostMapping("/{id}")
+    @Operation(
+            description = "suggest using postman to send image file",
+            summary = "Upload user image "
+    )
+    @PostMapping("/image/{id}")
     public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file,
                                          @PathVariable("id") Long id) throws IOException {
         String uploadImage = userService.uploadImage(file,id);
@@ -46,6 +51,10 @@ public class UserController {
      * @param userDto
      * @return
      */
+    @Operation(
+            description = "Update user infomation",
+            summary = "Update user infomation"
+    )
     @PutMapping("/info")
     public ResponseEntity<?> updateUser(@RequestBody UserDto userDto){
         String userSave = userService.update(userDto);
@@ -58,6 +67,10 @@ public class UserController {
      * @param id
      * @return
      */
+    @Operation(
+            description = "suggest using postman to get image",
+            summary = "Get user image "
+    )
     @GetMapping("/image/{id}")
     public ResponseEntity<?> findUserImageById(@PathVariable("id") Long id){
         byte[] imageData = userService.findImageById(id);
@@ -74,6 +87,10 @@ public class UserController {
      * @param
      * @return
      */
+    @Operation(
+            description = "Change password",
+            summary = "Change password"
+    )
     @PutMapping("/password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
         String message = userService.changePassword(changePasswordDto);
